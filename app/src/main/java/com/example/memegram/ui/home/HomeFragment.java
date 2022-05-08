@@ -9,23 +9,34 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.memegram.R;
 import com.example.memegram.databinding.FragmentHomeBinding;
+
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private ArrayList<Post> posts;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        posts = new ArrayList<>();
+        for(int i = 0; i < 100;i++){
+            Post post = new Post("abenezer_kebede","Addis Ababa, Ethiopia");
+            posts.add(post);
+        }
+        MemePostListAdapter adapter = new MemePostListAdapter(getContext(),posts);
+        RecyclerView recyclerView = root.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
         return root;
     }
 
