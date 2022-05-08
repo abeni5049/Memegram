@@ -66,6 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:backgroundTint="@color/light_blue"
+        android:id="@+id/login_button"
         android:text="Log In" />
 
     <LinearLayout
