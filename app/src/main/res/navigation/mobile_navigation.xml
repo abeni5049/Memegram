@@ -31,9 +31,9 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.memegram.ui.post.PostFragment"
+        android:name="com.example.memegram.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_profile" />
 
 
 </navigation>

@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         posts = new ArrayList<>();
-        for(int i = 0; i < 100;i++){
+        for(int i = 0; i < 15;i++){
             Post post = new Post("abenezer_kebede","Addis Ababa, Ethiopia");
             posts.add(post);
         }
