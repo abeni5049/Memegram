@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
+    app:cardCornerRadius="4dp">
+
+    <LinearLayout
+        android:padding="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/discover_profile_image"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:src="@drawable/memegram_logo"
+            app:civ_border_color="@color/purple_500"
+            app:civ_border_width="2dp"
+            android:layout_marginLeft="32dp"
+            />
+
+        <LinearLayout
+            android:paddingLeft="8dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/dicover_username"
+                android:text="Abenezer Kebede"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark"
+                android:textSize="14dp"
+                />
+
+            <TextView
+                android:id="@+id/discover_location"
+                android:text="Addis Ababa, Ethiopia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/discover_follow_button"
+            android:text="follow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/light_blue"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="32dp"
+            />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
