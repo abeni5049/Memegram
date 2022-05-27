@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.post.PostFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/template_grid_list"
+        android:padding="1dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="testing" />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
