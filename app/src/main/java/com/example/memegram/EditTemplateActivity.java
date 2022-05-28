@@ -16,10 +16,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.text.StaticLayout;
+import android.text.TextPaint;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class EditTemplateActivity extends AppCompatActivity {
-
+    private final int TEXT_MAX_LENGTH = 71;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +35,11 @@ public class EditTemplateActivity extends AppCompatActivity {
         Bitmap bitmap2 = addPaddingBottomForBitmap(bitmap1,100);
         Bitmap bitmap3 = addPaddingLeftForBitmap(bitmap2,0);
         Bitmap bitmap4 = addPaddingRightForBitmap(bitmap3,0);
-        String text = "my first meme I'm so excited to post this meme it means a lot to me for real for real";
-        Bitmap bitmap5 = drawTextToBitmap(getApplicationContext(),bitmap4,text);
-        template_image.setImageBitmap(bitmap5);
+        String textTop = "my first meme I'm so excited to post this meme";
+        String textBottom = "it means a lot to me";
+        Bitmap bitmap5 = drawMultilineTextToBitmapTop(getApplicationContext(),bitmap4,textBottom);
+        Bitmap bitmap6= drawMultilineTextToBitmapBottom(getApplicationContext(),bitmap5,textBottom);
+        template_image.setImageBitmap(bitmap6);
 
     }
 
@@ -76,56 +81,72 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
 
-    public static Bitmap drawStringOnBitmap(Bitmap src, String string, Point location, int color, int alpha, int size, boolean underline, int width , int height) {
 
-        Bitmap result = Bitmap.createBitmap(width, height, src.getConfig());
-
-        Canvas canvas = new Canvas(result);
-        canvas.drawBitmap(src, 0, 0, null);
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setAlpha(alpha);
-        paint.setTextSize(size);
-        paint.setAntiAlias(true);
-        paint.setUnderlineText(underline);
-        canvas.drawText(string, location.x, location.y, paint);
-
-        return result;
-    }
-
-
-
-    public Bitmap drawTextToBitmap(Context gContext,Bitmap bitmap, String gText) {
+    public Bitmap drawMultilineTextToBitmapTop(Context gContext,Bitmap bitmap,String gText) {
+        //TODO: auto scale text when the number of line increases (to fit the white space above the meme)
         Resources resources = gContext.getResources();
         float scale = resources.getDisplayMetrics().density;
-        android.graphics.Bitmap.Config bitmapConfig =bitmap.getConfig();
+        android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
         if(bitmapConfig == null) {
             bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
         }
         bitmap = bitmap.copy(bitmapConfig, true);
         Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        TextPaint paint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.BLACK);
         paint.setTextSize((int) (24 * scale));
+        int textWidth = canvas.getWidth() - (int) (16 * scale);
 
-        StaticLayout.Builder builder = StaticLayout.Builder.obtain(gText, 0, gText.length(), , bitmap.getWidth())
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(spacingAddition, spacingMultiplier)
-                .setIncludePad(includePadding)
-                .setMaxLines(5);
-        StaticLayout myStaticLayout = builder.build();
+        StaticLayout textLayout = new StaticLayout(gText, paint, textWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
 
-        // draw text to the Canvas center
-        Rect bounds = new Rect();
-        paint.getTextBounds(gText, 0, gText.length(), bounds);
-        int x = (bitmap.getWidth() - bounds.width())/2;
-        int y = (bitmap.getHeight() + bounds.height())/2;
 
-        canvas.drawText(gText, x, bounds.height(), paint);
+        float x = (bitmap.getWidth() - textWidth)/2;
+        float y;
+        if( textLayout.getLineCount() == 1){
+            y = 25;
+        }else {
+            y = 0;
+        }
+
+        canvas.save();
+        canvas.translate(x, y);
+        textLayout.draw(canvas);
+        canvas.restore();
 
         return bitmap;
     }
 
+    public Bitmap drawMultilineTextToBitmapBottom(Context gContext,Bitmap bitmap,String gText) {
+        //TODO: auto scale text when the number of line increases (to fit the white space above the meme)
+        Resources resources = gContext.getResources();
+        float scale = resources.getDisplayMetrics().density;
+        android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
+        if(bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        bitmap = bitmap.copy(bitmapConfig, true);
+        Canvas canvas = new Canvas(bitmap);
+        TextPaint paint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize((int) (24 * scale));
+        int textWidth = canvas.getWidth() - (int) (16 * scale);
+
+        StaticLayout textLayout = new StaticLayout(gText, paint, textWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
+
+        float x = (bitmap.getWidth() - textWidth) / 2;
+        float y;
+        if( textLayout.getLineCount() == 1){
+            y = bitmap.getHeight() - 75;
+        }else {
+            y = bitmap.getHeight() - 100;
+        }
+        canvas.save();
+        canvas.translate(x, y);
+        textLayout.draw(canvas);
+        canvas.restore();
+
+        return bitmap;
+    }
 
 
 }
