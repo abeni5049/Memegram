@@ -32,8 +32,8 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MemePostListHolder holder, int position) {
-        Post scout = posts.get(position);
-        holder.setDetails(scout);
+        Post post = posts.get(position);
+        holder.setDetails(post);
     }
 
     @Override

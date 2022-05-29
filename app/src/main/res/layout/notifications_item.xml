@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notifications_profile_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/memegram_logo"
+        app:civ_border_color="@color/purple_500"
+        app:civ_border_width="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/notifications_username_text"
+        android:text="abenezer_kebede"
+        android:textColor="@color/dark"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/notifications_profile_image"
+        android:layout_marginLeft="8dp"
+        />
+
+    <TextView
+        android:id="@+id/notification_text"
+        android:text="liked your meme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/notifications_username_text"
+        android:layout_marginLeft="8dp"
+        />
+
+    <TextView
+        android:id="@+id/notification_time_text"
+        android:text="5h"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/notifications_profile_image"
+        android:layout_below="@id/notifications_username_text"
+        android:layout_marginLeft="8dp"
+        />
+
+</RelativeLayout>
