@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <ImageView
         android:padding="8dp"
@@ -17,15 +17,7 @@
         android:layout_gravity="center"
         />
 
-<!--    <TextView-->
-<!--        android:text="Log In"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:textColor="@color/dark"-->
-<!--        android:textSize="48sp"-->
-<!--        android:padding="8dp"-->
-<!--        />-->
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_margin="8dp"
@@ -35,6 +27,7 @@
         android:hint="username">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username_text_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -51,6 +44,7 @@
         android:hint="password">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_text_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
