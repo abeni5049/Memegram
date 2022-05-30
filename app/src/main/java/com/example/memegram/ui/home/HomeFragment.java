@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.memegram.R;
 import com.example.memegram.chat.ChatListActivity;
 import com.example.memegram.databinding.FragmentHomeBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -35,14 +41,39 @@ public class HomeFragment extends Fragment {
         setHasOptionsMenu(true);
 
         posts = new ArrayList<>();
-        for(int i = 0; i < 15;i++){
-            Post post = new Post("abenezer_kebede","Addis Ababa, Ethiopia");
-            posts.add(post);
-        }
+
+
+        ProgressBar progressBar = root.findViewById(R.id.progress_bar);
+
         MemePostListAdapter adapter = new MemePostListAdapter(getContext(),posts);
         RecyclerView recyclerView = root.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef1 = database.getReference("posts");
+        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String username = ds.child("username").getValue(String.class);
+                    String imageURL = ds.child("imageURL").getValue(String.class);
+                    String location = ds.child("location").getValue(String.class);
+                    posts.add(new Post(username,location,imageURL));
+                    adapter.notifyDataSetChanged();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         return root;
     }
 
