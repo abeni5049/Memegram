@@ -42,8 +42,8 @@
         android:layout_centerHorizontal="true"/>
 
     <Button
-        android:id="@+id/save_button"
-        android:text="save"
+        android:id="@+id/post_button"
+        android:text="post"
         android:layout_margin="16dp"
         android:layout_alignParentBottom="true"
         android:layout_width="200dp"

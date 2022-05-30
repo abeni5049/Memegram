@@ -1,8 +1,11 @@
 package com.example.memegram;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,8 +16,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -26,9 +31,28 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class EditTemplateActivity extends AppCompatActivity {
     @Override
@@ -38,7 +62,9 @@ public class EditTemplateActivity extends AppCompatActivity {
         ImageView template_image = findViewById(R.id.template_image);
         EditText topEditText = findViewById(R.id.top_edit_text);
         EditText bottomEditText = findViewById(R.id.bottom_edit_text);
-        Button saveButton = findViewById(R.id.save_button);
+        Button saveButton = findViewById(R.id.post_button);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
 
         int ImageURL = getIntent().getExtras().getInt("ImageURL");
         template_image.setImageResource(ImageURL);
@@ -93,16 +119,74 @@ public class EditTemplateActivity extends AppCompatActivity {
         });
 
         saveButton.setOnClickListener(View->{
-            try{
-                String path = Environment.getExternalStorageDirectory().toString();
-                File file = new File(path, "meme.png");
-                FileOutputStream out = new FileOutputStream(file);
-                template_image_bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            ProgressDialog progressDialog
+                    = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
+            Date now = new Date();
+            String fileName = LoginActivity.username1+"-"+formatter.format(now);
+            StorageReference memesRef = storage.getReference().child("memes").child(fileName+".jpg");
+
+            // Get the data from an ImageView as bytes
+            template_image.setDrawingCacheEnabled(true);
+            template_image.buildDrawingCache();
+            Bitmap bitmap = ((BitmapDrawable) template_image.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = memesRef.putBytes(data);
+
+            uploadTask.addOnFailureListener(exception ->
+                    Toast.makeText(EditTemplateActivity.this, "error: "+exception, Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(taskSnapshot -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(EditTemplateActivity.this, "uploaded successfully", Toast.LENGTH_SHORT).show();
+                }).addOnProgressListener(
+                    taskSnapshot -> {
+                        double progress
+                                = (100.0
+                                * taskSnapshot.getBytesTransferred()
+                                / taskSnapshot.getTotalByteCount());
+                        progressDialog.setMessage(
+                                "Uploaded "
+                                        + (int)progress + "%");
+                    });
+            Task<Uri> urlTask = uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                return memesRef.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    String imageURL = downloadUri.toString();
+                    String location = "Addis Ababa, Ethiopia";
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef1 = database.getReference("posts");
+
+                    myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            DatabaseReference myRef = database.getReference("posts").push();
+                            myRef.child("username").setValue(LoginActivity.username1);
+                            myRef.child("imageURL").setValue(imageURL);
+                            myRef.child("location").setValue(location).addOnCompleteListener(task -> {
+                                Toast.makeText(EditTemplateActivity.this, "yay", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(EditTemplateActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "error occurred", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
     }
@@ -211,6 +295,7 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         return bitmap;
     }
+
 
 
 }
