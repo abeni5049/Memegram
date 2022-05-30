@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "171457035669",
+    "project_id": "memegram-696a3",
+    "storage_bucket": "memegram-696a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171457035669:android:89ff6b630a142127858a9c",
+        "android_client_info": {
+          "package_name": "com.example.memegram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171457035669-rcs77fo9bpk6p832js3dik1sivckrt2q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.memegram",
+            "certificate_hash": "e94b1b68b7374b63f1b244a3adc70f211118c672"
+          }
+        },
+        {
+          "client_id": "171457035669-b2ra5bikgpicidnkk1984pka5kqm88mp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEIyxxFpJB7YFREJVo4OxKHernPcvuIio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171457035669-b2ra5bikgpicidnkk1984pka5kqm88mp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

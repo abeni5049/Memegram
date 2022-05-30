@@ -25,6 +25,7 @@
         android:hint="name">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -39,6 +40,7 @@
         android:hint="username">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -55,6 +57,7 @@
         android:hint="password">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
@@ -72,6 +75,7 @@
         android:hint="confirm password">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confirm_password_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
@@ -80,6 +84,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/signup_button"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
         style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
