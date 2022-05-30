@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.memegram">
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/memegram_logo"
@@ -11,6 +10,12 @@
         android:roundIcon="@drawable/memegram_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Memegram">
+        <activity
+            android:name=".chat.MessageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat.ChatListActivity"
+            android:exported="false" />
         <activity
             android:name=".EditTemplateActivity"
             android:exported="false" />
