@@ -40,6 +40,7 @@ public class PostFragment extends Fragment implements TemplateGridAdapter.OnTemp
     private FragmentPostBinding binding;
     private ArrayList<Integer> ImageURLs;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

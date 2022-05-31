@@ -8,8 +8,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -17,9 +19,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.memegram.EditTemplateActivity;
+import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
 import com.example.memegram.chat.ChatListActivity;
+import com.example.memegram.chat.MessageActivity;
 import com.example.memegram.databinding.FragmentHomeBinding;
+import com.example.memegram.helper.RecyclerItemClickListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,11 +36,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class HomeFragment extends Fragment {
+
+public class HomeFragment extends Fragment implements MemePostListAdapter.MyClickListener {
 
     private FragmentHomeBinding binding;
     private ArrayList<Post> posts;
-
+    private ArrayList<DataSnapshot> dataSnapshots;
+    private DatabaseReference postsRef;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -41,27 +51,39 @@ public class HomeFragment extends Fragment {
         setHasOptionsMenu(true);
 
         posts = new ArrayList<>();
+        dataSnapshots = new ArrayList<>();
 
 
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
 
-        MemePostListAdapter adapter = new MemePostListAdapter(getContext(),posts);
+        MemePostListAdapter adapter = new MemePostListAdapter(getContext(),posts,this);
         RecyclerView recyclerView = root.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef1 = database.getReference("posts");
-        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+        postsRef = database.getReference("posts");
+        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 for(DataSnapshot ds : snapshot.getChildren()) {
+                    dataSnapshots.add(ds);
                     String username = ds.child("username").getValue(String.class);
                     String imageURL = ds.child("imageURL").getValue(String.class);
                     String location = ds.child("location").getValue(String.class);
-                    posts.add(new Post(username,location,imageURL));
+                    int numOfLikes = 0;
+                    boolean liked = false;
+                    for (DataSnapshot ds1: ds.child("like").getChildren()){
+                        if(ds1.getValue(Boolean.class)){
+                            if (ds1.getKey().equals(LoginActivity.username1)){
+                                liked = true;
+                            }
+                            numOfLikes += 1;
+                        }
+                    }
+                    posts.add(new Post(username,location,imageURL,numOfLikes,liked));
                     adapter.notifyDataSetChanged();
                     progressBar.setVisibility(View.INVISIBLE);
                 }
@@ -72,7 +94,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
 
         return root;
     }
@@ -99,4 +120,29 @@ public class HomeFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public void onLikeButtonClick(int pos) {
+        DataSnapshot ds = dataSnapshots.get(pos);
+        postsRef.child(ds.getKey()).child("like").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {
+        });
+
+    }
+
+    @Override
+    public void onUnlikeButtonClick(int pos) {
+        DataSnapshot ds = dataSnapshots.get(pos);
+        postsRef.child(ds.getKey()).child("like").child(LoginActivity.username1).setValue(false).addOnCompleteListener(task -> {
+        });
+    }
+
+    @Override
+    public void OnCommentButtonClick(int pos) {
+
+    }
+
+    @Override
+    public void onDoubleTap(int pos) {
+        
+    }
 }

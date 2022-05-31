@@ -173,6 +173,7 @@ public class EditTemplateActivity extends AppCompatActivity {
                             DatabaseReference myRef = database.getReference("posts").push();
                             myRef.child("username").setValue(LoginActivity.username1);
                             myRef.child("imageURL").setValue(imageURL);
+                            myRef.child("like").child(LoginActivity.username1).setValue(false);
                             myRef.child("location").setValue(location).addOnCompleteListener(task -> {
                                 Toast.makeText(EditTemplateActivity.this, "yay", Toast.LENGTH_SHORT).show();
                             });

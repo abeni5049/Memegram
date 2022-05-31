@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.memegram.R;
+import com.example.memegram.helper.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 

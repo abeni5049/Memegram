@@ -1,4 +1,4 @@
-package com.example.memegram.chat;
+package com.example.memegram.helper;
 
 import android.content.Context;
 import android.view.GestureDetector;
