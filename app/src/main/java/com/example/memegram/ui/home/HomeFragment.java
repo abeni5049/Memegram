@@ -64,10 +64,11 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         postsRef = database.getReference("posts");
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        postsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
+                posts.clear();
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     dataSnapshots.add(ds);
                     String username = ds.child("username").getValue(String.class);
@@ -84,9 +85,9 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                         }
                     }
                     posts.add(new Post(username,location,imageURL,numOfLikes,liked));
-                    adapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.INVISIBLE);
                 }
+                adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -138,7 +139,10 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
     @Override
     public void OnCommentButtonClick(int pos) {
-
+        DataSnapshot ds = dataSnapshots.get(pos);
+        Intent intent = new Intent(getContext(),CommentActivity.class);
+        intent.putExtra("postKey",ds.getKey());
+        startActivity(intent);
     }
 
     @Override

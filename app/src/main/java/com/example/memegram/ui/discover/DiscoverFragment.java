@@ -36,32 +36,8 @@ public class DiscoverFragment extends Fragment {
         setHasOptionsMenu(true);
 
         userList = new ArrayList<>();
-        for(int i = 0; i < 5; i++){
-            int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
-            DiscoverItem discoverItem = new DiscoverItem("abenezer_kebede","Addis Ababa, Ethiopia",imageURL);
-            userList.add(discoverItem);
-        }
-        for(int i = 0; i < 5; i++){
-            int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
-            DiscoverItem discoverItem = new DiscoverItem("abel_wondimeneh","Addis Ababa, Ethiopia",imageURL);
-            userList.add(discoverItem);
-        }
-        for(int i = 0; i < 5; i++){
-            int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
-            DiscoverItem discoverItem = new DiscoverItem("dawit_mehari","Addis Ababa, Ethiopia",imageURL);
-            userList.add(discoverItem);
-        }
-        for(int i = 0; i < 5; i++){
-            int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
-            DiscoverItem discoverItem = new DiscoverItem("eyuel_tinsae","Addis Ababa, Ethiopia",imageURL);
-            userList.add(discoverItem);
-        }
 
-        for(int i = 0; i < 5; i++){
-            int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
-            DiscoverItem discoverItem = new DiscoverItem("eyob_niguse","Addis Ababa, Ethiopia",imageURL);
-            userList.add(discoverItem);
-        }
+
 
         RecyclerView recyclerView = root.findViewById(R.id.discover_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());

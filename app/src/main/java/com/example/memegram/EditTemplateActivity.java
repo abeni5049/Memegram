@@ -174,6 +174,7 @@ public class EditTemplateActivity extends AppCompatActivity {
                             myRef.child("username").setValue(LoginActivity.username1);
                             myRef.child("imageURL").setValue(imageURL);
                             myRef.child("like").child(LoginActivity.username1).setValue(false);
+                            myRef.child("comment");
                             myRef.child("location").setValue(location).addOnCompleteListener(task -> {
                                 Toast.makeText(EditTemplateActivity.this, "yay", Toast.LENGTH_SHORT).show();
                             });
