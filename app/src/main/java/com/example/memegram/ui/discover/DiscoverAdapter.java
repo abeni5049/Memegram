@@ -1,5 +1,6 @@
 package com.example.memegram.ui.discover;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.memegram.R;
 
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ import java.util.Locale;
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.DiscoverViewHolder> implements Filterable {
     private List<DiscoverItem>  userList;
     private List<DiscoverItem>  userListFull;
+    private Context context;
 
-    DiscoverAdapter(List<DiscoverItem> userList){
+    DiscoverAdapter(Context context,List<DiscoverItem> userList){
         this.userList = userList;
         this.userListFull = new ArrayList<>(userList);
+        this.context = context;
     }
     @NonNull
     @Override
@@ -35,7 +39,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     @Override
     public void onBindViewHolder(@NonNull DiscoverViewHolder holder, int position) {
         DiscoverItem currentItem = userList.get(position);
-        holder.profileImage.setImageResource(currentItem.getImageURL());
+        Glide.with(context).load(currentItem.getImageURL()).into(holder.profileImage);
         holder.usernameText.setText(currentItem.getUsername());
         holder.locationText.setText(currentItem.getLocation());
     }

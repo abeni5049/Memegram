@@ -9,15 +9,16 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.memegram.R;
 
 import java.util.ArrayList;
 
 public class GridMemePostListAdapter extends RecyclerView.Adapter<GridMemePostListAdapter.GridMemePostListHolder> {
     private Context context;
-    private ArrayList<Integer> ImageURLs;
+    private ArrayList<String> ImageURLs;
 
-    public GridMemePostListAdapter(Context context, ArrayList<Integer> ImageURL) {
+    public GridMemePostListAdapter(Context context, ArrayList<String> ImageURL) {
         this.context = context;
         this.ImageURLs = ImageURL;
     }
@@ -31,7 +32,7 @@ public class GridMemePostListAdapter extends RecyclerView.Adapter<GridMemePostLi
 
     @Override
     public void onBindViewHolder(@NonNull GridMemePostListHolder holder, int position) {
-        holder.setDetails(ImageURLs.get(position));
+        Glide.with(context).load(ImageURLs.get(position)).into(holder.postImage);
     }
 
     @Override
@@ -44,10 +45,6 @@ public class GridMemePostListAdapter extends RecyclerView.Adapter<GridMemePostLi
         public GridMemePostListHolder(@NonNull View itemView) {
             super(itemView);
             postImage = itemView.findViewById(R.id.grid_image);
-        }
-
-        public void setDetails(int imageId) {
-            postImage.setImageResource(imageId);
         }
     }
 }

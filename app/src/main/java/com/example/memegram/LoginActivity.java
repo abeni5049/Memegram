@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
     public static  String username1;
+    public static  String profileImageURL;
     TextView registerText;
     Button loginButton;
     @Override
@@ -50,6 +51,8 @@ public class LoginActivity extends AppCompatActivity {
                         for (DataSnapshot ds : snapshot.getChildren()) {
                             String uName = ds.child("username").getValue(String.class);
                             String pass = ds.child("password").getValue(String.class);
+                            String imageURL = ds.child("imageURL").getValue(String.class);
+                            profileImageURL = imageURL;
                             if(uName != null && pass != null)
                                 if (uName.equals(username) && pass.equals(password)) {
                                     isCorrect = true;

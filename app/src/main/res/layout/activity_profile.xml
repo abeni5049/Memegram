@@ -109,7 +109,16 @@
 
         <Button
             android:layout_margin="4dp"
-            android:text="Edit Profile"
+            android:text="Follow"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_blue"
+            android:layout_height="wrap_content"/>
+
+
+        <Button
+            android:layout_margin="4dp"
+            android:text="Message"
             android:textColor="@color/dark"
             android:layout_width="0dp"
             android:layout_weight="1"

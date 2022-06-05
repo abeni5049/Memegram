@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Memegram">
         <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.home.CommentActivity"
             android:exported="false" />
         <activity
