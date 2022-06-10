@@ -1,6 +1,7 @@
 package com.example.memegram.ui.discover;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,17 +24,19 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     private List<DiscoverItem>  userList;
     private List<DiscoverItem>  userListFull;
     private Context context;
+    private MyClickListener listener;
 
-    DiscoverAdapter(Context context,List<DiscoverItem> userList){
+    DiscoverAdapter(Context context,List<DiscoverItem> userList,MyClickListener listener){
         this.userList = userList;
         this.userListFull = new ArrayList<>(userList);
         this.context = context;
+        this.listener = listener;
     }
     @NonNull
     @Override
     public DiscoverViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.discover_item,parent,false);
-        return new DiscoverViewHolder(view);
+        return new DiscoverViewHolder(view,listener);
     }
 
     @Override
@@ -83,14 +86,33 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
         }
     };
 
-    class DiscoverViewHolder extends  RecyclerView.ViewHolder{
+    class DiscoverViewHolder extends  RecyclerView.ViewHolder implements  View.OnClickListener{
         ImageView profileImage;
         TextView usernameText,locationText;
-        DiscoverViewHolder(View itemView){
+        Button followButton;
+        DiscoverViewHolder(View itemView,MyClickListener listener){
             super(itemView);
             profileImage = itemView.findViewById(R.id.discover_profile_image);
             usernameText = itemView.findViewById(R.id.dicover_username);
             locationText = itemView.findViewById(R.id.discover_location);
+            followButton = itemView.findViewById(R.id.discover_follow_button);
+            followButton.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == followButton.getId()){
+                followButton.setText("following");
+                followButton.setTextColor(Color.BLACK);
+                followButton.setBackgroundColor(Color.WHITE);
+                listener.onFollowButtonClick(this.getLayoutPosition());
+            }
+        }
+
     }
+
+    public interface MyClickListener {
+        void onFollowButtonClick(int pos);
+    }
+
 }

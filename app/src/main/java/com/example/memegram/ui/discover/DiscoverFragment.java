@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
 import com.example.memegram.databinding.FragmentDiscoverBinding;
+import com.example.memegram.ui.home.MemePostListAdapter;
 import com.example.memegram.ui.home.Post;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,11 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscoverFragment extends Fragment {
+public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClickListener {
 
     private FragmentDiscoverBinding binding;
     private List<DiscoverItem> userList;
     private DiscoverAdapter adapter;
+    private ArrayList<DataSnapshot> dataSnapshots;
+    private DatabaseReference usersRef;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -45,21 +49,29 @@ public class DiscoverFragment extends Fragment {
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
 
 
+        dataSnapshots = new ArrayList<>();
         userList = new ArrayList<>();
 
 
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference usersRef = database.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef = database.getReference("users");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 userList.clear();
+                dataSnapshots.clear();
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     String username = ds.child("username").getValue(String.class);
                     String imageURL = ds.child("imageURL").getValue(String.class);
                     String location = ds.child("location").getValue(String.class);
-                    if (!username.equals(LoginActivity.username1)){
+                    boolean isFollower = ds.child("followers").hasChild(LoginActivity.username1);
+                    if( isFollower ){
+                        isFollower = ds.child("followers").child(LoginActivity.username1).getValue(Boolean.class);
+                    }
+                    if (!username.equals(LoginActivity.username1) && !isFollower){
+                        dataSnapshots.add(ds);
                         userList.add(new DiscoverItem(username,location,imageURL));
                     }
                 }
@@ -75,7 +87,7 @@ public class DiscoverFragment extends Fragment {
 
         RecyclerView recyclerView = root.findViewById(R.id.discover_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        adapter = new DiscoverAdapter(getContext(),userList);
+        adapter = new DiscoverAdapter(getContext(),userList,this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         return root;
@@ -109,6 +121,17 @@ public class DiscoverFragment extends Fragment {
                 adapter.getFilter().filter(s);
                 return false;
             }
+        });
+    }
+
+    @Override
+    public void onFollowButtonClick(int pos) {
+        DataSnapshot ds1 = dataSnapshots.get(pos);
+        String uname = ds1.child("username").getValue(String.class);
+        usersRef.child(LoginActivity.userDataSnapshot.getKey()).child("following").child(uname).setValue(true).addOnCompleteListener(task -> {
+        });
+        usersRef.child(ds1.getKey()).child("followers").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {
+
         });
     }
 }

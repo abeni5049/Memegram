@@ -108,6 +108,7 @@
         android:layout_height="wrap_content">
 
         <Button
+            android:id="@+id/edit_profile_button"
             android:layout_margin="4dp"
             android:text="Edit Profile"
             android:textColor="@color/dark"

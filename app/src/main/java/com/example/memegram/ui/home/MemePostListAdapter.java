@@ -81,7 +81,6 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
             Glide.with(context).load(post.getImageURL()).into(postImage);
         }
 
-
         @Override
         public void onClick(View view) {
             if (view.getId() == likeButton.getId()){

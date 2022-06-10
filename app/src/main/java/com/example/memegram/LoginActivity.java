@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
     public static  String username1;
     public static  String profileImageURL;
+    public static DataSnapshot userDataSnapshot;
     TextView registerText;
     Button loginButton;
     @Override
@@ -56,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(uName != null && pass != null)
                                 if (uName.equals(username) && pass.equals(password)) {
                                     isCorrect = true;
+                                    userDataSnapshot = ds;
                                     break;
                                 }
                         }
