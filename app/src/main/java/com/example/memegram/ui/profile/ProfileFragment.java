@@ -1,5 +1,7 @@
 package com.example.memegram.ui.profile;
 
+import static java.util.Collections.reverse;
+
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,6 +42,8 @@ public class ProfileFragment extends Fragment {
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
         CircleImageView profileImage = root.findViewById(R.id.profile_image);
         TextView numberOfPostsText = root.findViewById(R.id.num_of_posts);
+        TextView numberOfFollowersText = root.findViewById(R.id.num_of_followers);
+        TextView numberOfFollowingText = root.findViewById(R.id.num_of_following);
         Glide.with(getContext()).load(LoginActivity.profileImageURL).into(profileImage);
 
 
@@ -76,6 +80,7 @@ public class ProfileFragment extends Fragment {
                     }
                 }
                 numberOfPostsText.setText(String.valueOf(numberOfPosts));
+                reverse(ImageURLs);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -85,6 +90,24 @@ public class ProfileFragment extends Fragment {
 
             }
         });
+
+
+        int numOfFollowing = 0;
+        for (DataSnapshot ds1: LoginActivity.userDataSnapshot.child("following").getChildren()){
+            if(ds1.getValue(Boolean.class)){
+                numOfFollowing += 1;
+            }
+        }
+        numberOfFollowingText.setText(String.valueOf(numOfFollowing));
+
+        int numOfFollowers = 0;
+        for (DataSnapshot ds1: LoginActivity.userDataSnapshot.child("followers").getChildren()){
+            if(ds1.getValue(Boolean.class)){
+                numOfFollowers += 1;
+            }
+        }
+        numberOfFollowersText.setText(String.valueOf(numOfFollowers));
+
 
         return root;
     }

@@ -39,6 +39,7 @@ public class CommentActivity extends AppCompatActivity {
         EditText commentEditText = findViewById(R.id.comment_edittext);
 
         String postKey = getIntent().getExtras().getString("postKey");
+        int item_pos = getIntent().getExtras().getInt("pos");
         comments = new ArrayList<>();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -77,6 +78,33 @@ public class CommentActivity extends AppCompatActivity {
             DatabaseReference ref = postsRef.child(postKey).child("comment").push();
             ref.child("username").setValue(LoginActivity.username1);
             ref.child("comment").setValue(commentEditText.getText().toString());
+
+            DataSnapshot ds = HomeFragment.dataSnapshots.get(item_pos);
+            String username = ds.child("username").getValue(String.class);
+
+            DatabaseReference myRef1 = database.getReference("users");
+
+            myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        String uName = ds.child("username").getValue(String.class);
+                        if(uName.equals(username)){
+                            DatabaseReference myref = myRef1.child(ds.getKey()).child("notifications").push();
+                            myref.child("postId").setValue(ds.getKey());
+                            myref.child("type").setValue("comment");
+                            myref.child("username").setValue(LoginActivity.username1).addOnCompleteListener(task -> {
+                            });
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
             commentEditText.setText("");
         });
 

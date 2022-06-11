@@ -1,5 +1,7 @@
 package com.example.memegram.ui.home;
 
+import static java.util.Collections.reverse;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,7 +43,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
     private FragmentHomeBinding binding;
     private ArrayList<Post> posts;
-    private ArrayList<DataSnapshot> dataSnapshots;
+    public  static ArrayList<DataSnapshot> dataSnapshots;
     private DatabaseReference postsRef;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                     }
                     posts.add(new Post(username,location,imageURL,numOfLikes,liked));
                 }
+                reverse(posts);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -128,6 +131,31 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
         postsRef.child(ds.getKey()).child("like").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {
         });
 
+        String username = ds.child("username").getValue(String.class);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef1 = database.getReference("users");
+
+        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uName = ds.child("username").getValue(String.class);
+                    if(uName.equals(username)){
+                        DatabaseReference myref = myRef1.child(ds.getKey()).child("notifications").push();
+                        myref.child("postId").setValue(ds.getKey());
+                        myref.child("type").setValue("like");
+                        myref.child("username").setValue(LoginActivity.username1).addOnCompleteListener(task -> {
+                        });
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     @Override
@@ -142,6 +170,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
         DataSnapshot ds = dataSnapshots.get(pos);
         Intent intent = new Intent(getContext(),CommentActivity.class);
         intent.putExtra("postKey",ds.getKey());
+        intent.putExtra("pos",pos);
         startActivity(intent);
     }
 
