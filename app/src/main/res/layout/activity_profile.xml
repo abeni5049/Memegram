@@ -8,7 +8,7 @@
     tools:context=".ui.profile.ProfileFragment">
 
     <LinearLayout
-        android:id="@+id/top_layout"
+        android:id="@+id/top_layout2"
         android:layout_width="match_parent"
         android:layout_height="132dp"
         android:paddingLeft="8dp"
@@ -17,7 +17,7 @@
         >
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/profile_image2"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
@@ -37,11 +37,11 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:orientation="vertical"
                 >
                 <TextView
-                    android:id="@+id/num_of_posts"
+                    android:id="@+id/num_of_posts2"
                     android:text="1,487"
                     android:textColor="@color/dark"
                     android:textSize="16sp"
@@ -59,10 +59,11 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:orientation="vertical"
                 >
                 <TextView
+                    android:id="@+id/num_of_followers2"
                     android:text="128K"
                     android:textColor="@color/dark"
                     android:textSize="16sp"
@@ -79,10 +80,11 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:orientation="vertical"
                 >
                 <TextView
+                    android:id="@+id/num_of_following2"
                     android:text="1,310"
                     android:textSize="16sp"
                     android:textColor="@color/dark"
@@ -100,8 +102,8 @@
 
 
     <LinearLayout
-        android:id="@+id/middle_layout"
-        android:layout_below="@id/top_layout"
+        android:id="@+id/middle_layout2"
+        android:layout_below="@id/top_layout2"
         android:padding="8dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -131,8 +133,8 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/middle_layout"
-        android:id="@+id/grid_list"
+        android:layout_below="@+id/middle_layout2"
+        android:id="@+id/grid_list2"
         android:padding="1dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

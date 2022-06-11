@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memegram.EditTemplateActivity;
 import com.example.memegram.LoginActivity;
+import com.example.memegram.ProfileActivity;
 import com.example.memegram.R;
 import com.example.memegram.chat.ChatListActivity;
 import com.example.memegram.chat.MessageActivity;
@@ -74,6 +75,18 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     dataSnapshots.add(ds);
                     String username = ds.child("username").getValue(String.class);
+
+                    // get user profile image
+                    String profileURL= "https://firebasestorage.googleapis.com/v0/b/memegram-696a3.appspot.com/o/profile.jpeg?alt=media&token=8c91a398-8ca0-47a2-a8bf-5272aabce1e4";
+//                    DatabaseReference usersRef = database.getReference("users");
+//                    for (DataSnapshot ds2 : ) {
+//                        String uName = ds2.child("username").getValue(String.class);
+//                        if (username.equals(uName)) {
+//                            profileURL = ds.child("imageURL").getValue(String.class);
+//                        }
+//                    }
+                    //
+
                     String imageURL = ds.child("imageURL").getValue(String.class);
                     String location = ds.child("location").getValue(String.class);
                     int numOfLikes = 0;
@@ -86,7 +99,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                             numOfLikes += 1;
                         }
                     }
-                    posts.add(new Post(username,location,imageURL,numOfLikes,liked));
+                    posts.add(new Post(username,location,imageURL,numOfLikes,liked, profileURL));
                 }
                 reverse(posts);
                 adapter.notifyDataSetChanged();
@@ -166,11 +179,18 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
     }
 
     @Override
-    public void OnCommentButtonClick(int pos) {
+    public void onCommentButtonClick(int pos) {
         DataSnapshot ds = dataSnapshots.get(pos);
         Intent intent = new Intent(getContext(),CommentActivity.class);
         intent.putExtra("postKey",ds.getKey());
         intent.putExtra("pos",pos);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onUsernameTextClick(int pos) {
+        Intent intent = new Intent(getContext(), ProfileActivity.class);
+        intent.putExtra("username",posts.get(pos).getUsername());
         startActivity(intent);
     }
 

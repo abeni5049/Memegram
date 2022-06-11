@@ -18,6 +18,8 @@ import com.example.memegram.R;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapter.MemePostListHolder> {
     private Context context;
     private ArrayList<Post> posts;
@@ -49,6 +51,7 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
     public class MemePostListHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView usernameText,locationText,numberOfLikeText;
         private ImageView postImage;
+        private CircleImageView profileImage;
         private CheckBox likeButton;
         private ImageButton commentButton;
         private MyClickListener listener;
@@ -61,10 +64,12 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
             likeButton = itemView.findViewById(R.id.like_icon);
             commentButton = itemView.findViewById(R.id.comment_button);
             numberOfLikeText = itemView.findViewById(R.id.number_of_like_text);
+            profileImage  = itemView.findViewById(R.id.profile_image);
 
             likeButton.setOnClickListener(this);
             commentButton.setOnClickListener(this);
             postImage.setOnClickListener(this);
+            usernameText.setOnClickListener(this);
         }
 
         public void setDetails(Post post) {
@@ -79,6 +84,7 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
             numberOfLikeText.setText(likes);
             likeButton.setChecked(post.isLiked());
             Glide.with(context).load(post.getImageURL()).into(postImage);
+            Glide.with(context).load(post.getProfileURL()).into(profileImage);
         }
 
         @Override
@@ -90,9 +96,11 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
                     listener.onUnlikeButtonClick(this.getLayoutPosition());
                 }
             }else if(view.getId() == commentButton.getId()){
-                listener.OnCommentButtonClick(this.getLayoutPosition());
+                listener.onCommentButtonClick(this.getLayoutPosition());
             }else if(view.getId() == postImage.getId()){
                 listener.onDoubleTap(this.getLayoutPosition());
+            }else if(view.getId() == usernameText.getId()){
+                listener.onUsernameTextClick(this.getLayoutPosition());
             }
 
         }
@@ -101,7 +109,8 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
     public interface MyClickListener {
         void onLikeButtonClick(int pos);
         void onUnlikeButtonClick(int pos);
-        void OnCommentButtonClick(int pos);
+        void onCommentButtonClick(int pos);
+        void onUsernameTextClick(int pos);
         void onDoubleTap(int pos);
     }
 
