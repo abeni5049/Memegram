@@ -110,6 +110,7 @@
         android:layout_height="wrap_content">
 
         <Button
+            android:id="@+id/follow_button"
             android:layout_margin="4dp"
             android:text="Follow"
             android:layout_width="0dp"
@@ -119,6 +120,7 @@
 
 
         <Button
+            android:id="@+id/message_button"
             android:layout_margin="4dp"
             android:text="Message"
             android:textColor="@color/dark"

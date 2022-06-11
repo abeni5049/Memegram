@@ -7,13 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.memegram.chat.MessageActivity;
 import com.example.memegram.ui.profile.GridMemePostListAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +40,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView numberOfPostsText = findViewById(R.id.num_of_posts2);
         TextView numberOfFollowersText = findViewById(R.id.num_of_followers2);
         TextView numberOfFollowingText = findViewById(R.id.num_of_following2);
+        Button messageButton = findViewById(R.id.message_button);
 
         String uname = getIntent().getExtras().getString("username");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -117,11 +121,18 @@ public class ProfileActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
             }
-
+    
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+        });
+
+
+        messageButton.setOnClickListener(view ->{
+            Intent intent = new Intent(ProfileActivity.this, MessageActivity.class);
+            intent.putExtra("username",uname);
+            startActivity(intent);
         });
 
 

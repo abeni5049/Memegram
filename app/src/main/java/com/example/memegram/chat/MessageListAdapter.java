@@ -10,12 +10,14 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
 import com.google.firebase.installations.Utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
@@ -24,6 +26,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<Message> mMessageList;
+    private HashSet<String> dates = new HashSet<>();
 
     public MessageListAdapter(Context context, List<Message> messageList) {
         mContext = context;
@@ -40,7 +43,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
         Message message = (Message) mMessageList.get(position);
 
-        if (message.getSenderUsername().equals(  message.getSenderUsername() ) ){
+        if (LoginActivity.username1.equals(message.getSenderUsername())){
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
@@ -97,41 +100,53 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             String pattern = "HH:mm";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-            Date time = new Date();
-            long t = time.getTime();
-            String date = simpleDateFormat.format(t);
-            timeText.setText(date);
+            String time = simpleDateFormat.format(message.getCreatedAt());
+            timeText.setText(time);
 
             String pattern1 = "MMMM dd";
             SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
-            String date1 = simpleDateFormat1.format(t);
-            dateText.setText(date1);
+            String date = simpleDateFormat1.format(message.getCreatedAt());
+            if(dates.contains(date)){
+                dateText.setVisibility(View.GONE);
+            }else {
+                dates.add(date);
+                dateText.setText(date);
+                dateText.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     private class ReceivedMessageHolder extends RecyclerView.ViewHolder {
-        TextView messageText, timeText, nameText;
-        ImageView profileImage;
+        TextView messageText, timeText,dateText;
 
         ReceivedMessageHolder(View itemView) {
             super(itemView);
 
             messageText =  itemView.findViewById(R.id.text_gchat_message_other);
             timeText = itemView.findViewById(R.id.text_gchat_timestamp_other);
-            nameText =  itemView.findViewById(R.id.text_gchat_user_other);
-            profileImage =  itemView.findViewById(R.id.image_gchat_profile_other);
+            dateText = itemView.findViewById(R.id.date_text);
         }
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
 
-            // Format the stored timestamp into a readable String using method.
-//            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-            timeText.setText("10:00");
-//            nameText.setText(message.getSender().getNickname());
-            nameText.setText("abenezer_kebede");
-            // Insert the profile image from the URL into the ImageView.
-//            Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileUrl(), profileImage);
+            messageText.setText(message.getMessage());
+
+            String pattern = "HH:mm";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            String time = simpleDateFormat.format(message.getCreatedAt());
+            timeText.setText(time);
+
+            String pattern1 = "MMMM dd";
+            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
+            String date = simpleDateFormat1.format(message.getCreatedAt());
+            if(dates.contains(date)){
+                dateText.setVisibility(View.GONE);
+            }else {
+                dates.add(date);
+                dateText.setText(date);
+                dateText.setVisibility(View.VISIBLE);
+            }
         }
     }
 }
