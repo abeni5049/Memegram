@@ -31,7 +31,7 @@
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.25" />
         <entry key="app/src/main/res/layout/grid_post_item.xml" value="0.16979166666666667" />
         <entry key="app/src/main/res/layout/item_message_received.xml" value="0.16979166666666667" />
-        <entry key="app/src/main/res/layout/item_message_sent.xml" value="0.16979166666666667" />
+        <entry key="app/src/main/res/layout/item_message_sent.xml" value="0.5" />
         <entry key="app/src/main/res/layout/meme_post_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/notifications_item.xml" value="0.33" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.16979166666666667" />

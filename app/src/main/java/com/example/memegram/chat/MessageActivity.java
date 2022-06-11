@@ -21,7 +21,7 @@ public class MessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message);
         ArrayList<Message> messages = new  ArrayList<>();
         for(int i = 0; i < 15 ; i++){
-            messages.add(new Message("hey Abeni","abenezer_kebede",231241,"dfa.jpg"));
+            messages.add(new Message("hey Abeni","abenezer_kebede",231241+i*2000,"dfa.jpg"));
         }
         recyclerView = findViewById(R.id.recycler_gchat);
         adapter = new MessageListAdapter(this,messages);

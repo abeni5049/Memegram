@@ -11,7 +11,11 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memegram.R;
+import com.google.firebase.installations.Utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
@@ -78,21 +82,30 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     }
 
     private class SentMessageHolder extends RecyclerView.ViewHolder {
-        TextView messageText, timeText;
+        TextView messageText, timeText,dateText;
 
         SentMessageHolder(View itemView) {
             super(itemView);
 
             messageText =  itemView.findViewById(R.id.text_gchat_message_me);
             timeText =  itemView.findViewById(R.id.text_gchat_timestamp_me);
+            dateText = itemView.findViewById(R.id.text_gchat_date_me);
         }
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
 
-            // Format the stored timestamp into a readable String using method.
-            //timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-            timeText.setText("10:00");
+            String pattern = "HH:mm";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            Date time = new Date();
+            long t = time.getTime();
+            String date = simpleDateFormat.format(t);
+            timeText.setText(date);
+
+            String pattern1 = "MMMM dd";
+            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
+            String date1 = simpleDateFormat1.format(t);
+            dateText.setText(date1);
         }
     }
 
