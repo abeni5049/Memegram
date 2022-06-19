@@ -41,7 +41,7 @@ public class SignupActivity extends AppCompatActivity {
 
         signupButton.setOnClickListener(view ->{
             String name = nameText.getText().toString().trim();
-            String username = usernameText.getText().toString().trim();
+            String username = usernameText.getText().toString().trim().toLowerCase();
             String password = passwordText.getText().toString().trim();
             String confirmPassword = confirmPasswordText.getText().toString().trim();
 
@@ -62,12 +62,11 @@ public class SignupActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         boolean isTaken = false;
                         for (DataSnapshot ds : snapshot.getChildren()) {
-                            String str = ds.child("username").getValue(String.class);
-                            if(str!=null)
-                                if (str.equals(username)) {
-                                    isTaken = true;
-                                    break;
-                                }
+                            String str = ds.child("username").getValue(String.class).toLowerCase();
+                            if (str.equals(username)) {
+                                isTaken = true;
+                                break;
+                            }
                         }
 
                         if (isTaken) {

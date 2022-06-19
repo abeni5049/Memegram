@@ -19,8 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Locale;
+
 public class LoginActivity extends AppCompatActivity {
-    public static  String username1;
+    public static  String username1=" ";
     public static  String profileImageURL;
     public static DataSnapshot userDataSnapshot;
     TextView registerText;
@@ -40,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please connect to the internet", Toast.LENGTH_SHORT).show();
             }else {
                 loginButton.setEnabled(false);
-                String username = usernameText.getText().toString().trim();
+                String username = usernameText.getText().toString().trim().toLowerCase();
                 String password = passwordText.getText().toString().trim();
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -50,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         boolean isCorrect = false;
                         for (DataSnapshot ds : snapshot.getChildren()) {
-                            String uName = ds.child("username").getValue(String.class);
+                            String uName = ds.child("username").getValue(String.class).toLowerCase();
                             String pass = ds.child("password").getValue(String.class);
                             String imageURL = ds.child("imageURL").getValue(String.class);
                             profileImageURL = imageURL;
