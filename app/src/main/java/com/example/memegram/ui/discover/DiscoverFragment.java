@@ -1,5 +1,6 @@
 package com.example.memegram.ui.discover;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +19,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.memegram.EditProfileActivity;
 import com.example.memegram.LoginActivity;
+import com.example.memegram.MainActivity;
 import com.example.memegram.R;
 import com.example.memegram.databinding.FragmentDiscoverBinding;
 import com.example.memegram.ui.home.MemePostListAdapter;
@@ -56,7 +59,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         usersRef = database.getReference("users");
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
@@ -128,8 +131,26 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
     public void onFollowButtonClick(int pos) {
         DataSnapshot ds1 = dataSnapshots.get(pos);
         String uname = ds1.child("username").getValue(String.class);
-        usersRef.child(LoginActivity.userDataSnapshot.getKey()).child("following").child(uname).setValue(true).addOnCompleteListener(task -> {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef1 = database.getReference("users");
+        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uName = ds.child("username").getValue(String.class);
+                    if (uName.equals(LoginActivity.username1)){
+                        usersRef.child(ds.getKey()).child("following").child(uname).setValue(true).addOnCompleteListener(task -> {
+                        });
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
+
         usersRef.child(ds1.getKey()).child("followers").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {
 
         });

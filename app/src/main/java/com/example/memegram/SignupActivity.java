@@ -72,6 +72,7 @@ public class SignupActivity extends AppCompatActivity {
 
                         if (isTaken) {
                             Toast.makeText(SignupActivity.this, "this username is taken", Toast.LENGTH_SHORT).show();
+                            signupButton.setEnabled(true);
                         } else {
                             DatabaseReference myRef = database.getReference("users").push();
                             myRef.child("name").setValue(name);

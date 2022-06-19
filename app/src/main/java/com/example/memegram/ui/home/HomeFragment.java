@@ -114,8 +114,8 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 posts.clear();
+                dataSnapshots.clear();
                 for(DataSnapshot ds : snapshot.getChildren()) {
-                    dataSnapshots.add(ds);
                     String username = ds.child("username").getValue(String.class);
 
                     String profileURL= profileURLs.get(username);
@@ -134,6 +134,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                     }
                     if(following.contains(username)) {
                         posts.add(new Post(username, location, imageURL, numOfLikes, liked, profileURL));
+                        dataSnapshots.add(ds);
                     }
                 }
                 reverse(posts);

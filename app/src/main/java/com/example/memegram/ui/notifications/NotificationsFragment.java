@@ -46,6 +46,7 @@ public class NotificationsFragment extends Fragment {
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //Todo: remove user data snapshot
         DatabaseReference notificationsRef = database.getReference("users").child(LoginActivity.userDataSnapshot.getKey()).child("notifications");
         notificationsRef.addValueEventListener(new ValueEventListener() {
             @Override

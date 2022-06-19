@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -108,10 +109,163 @@ public class EditProfileActivity extends AppCompatActivity {
                             DatabaseReference myRef = database.getReference("users").child(currentUseSnapshot);
                             myRef.child("name").setValue(name);
                             myRef.child("username").setValue(newUsername);
-                            LoginActivity.username1 = newUsername;
+                            String oldUsername = LoginActivity.username1;
+                            if(!oldUsername.equals(newUsername)) {
+                                LoginActivity.username1 = newUsername;
+
+                                //update posts
+                                DatabaseReference postsRef = database.getReference("posts");
+                                postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds : snapshot.getChildren()) {
+                                            String username = ds.child("username").getValue(String.class);
+                                            if(username.equals(oldUsername)){
+                                                postsRef.child(ds.getKey()).child("username").setValue(newUsername);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
+                                //update following and followers
+                                DatabaseReference userRef = database.getReference("users");
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds: snapshot.getChildren()){
+                                            boolean hasChild = ds.child("followers").hasChild(oldUsername);
+                                            if(hasChild){
+                                                boolean isTrue = ds.child("followers").child(oldUsername).getValue(Boolean.class);
+                                                userRef.child(ds.getKey()).child("followers").child(newUsername).setValue(isTrue);
+                                                userRef.child(ds.getKey()).child("followers").child(oldUsername).removeValue();
+                                            }
+
+                                            boolean hasChild1 = ds.child("following").hasChild(oldUsername);
+                                            if(hasChild1){
+                                                boolean isTrue = ds.child("following").child(oldUsername).getValue(Boolean.class);
+                                                userRef.child(ds.getKey()).child("following").child(newUsername).setValue(isTrue);
+                                                userRef.child(ds.getKey()).child("following").child(oldUsername).removeValue();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+
+                                });
+
+                                //update notifications
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds: snapshot.getChildren()){
+                                            userRef.child(ds.getKey()).child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    for(DataSnapshot ds1: snapshot.getChildren()){
+                                                        if(ds1.child("username").getValue(String.class).equals(oldUsername)){
+                                                            userRef.child(ds.getKey()).child("notifications").child(ds1.getKey()).child("username").setValue(newUsername);
+                                                        }
+                                                    }
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {}
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+                                });
+
+                                //update like
+                                postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds: snapshot.getChildren()){
+                                            boolean hasChild =  ds.child("like").hasChild(oldUsername);
+                                            if(hasChild){
+                                                boolean isTrue = ds.child("like").child(oldUsername).getValue(Boolean.class);
+                                                postsRef.child(ds.getKey()).child("like").child(newUsername).setValue(isTrue);
+                                                postsRef.child(ds.getKey()).child("like").child(oldUsername).removeValue();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+                                });
+
+                                //update comment
+                                postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds: snapshot.getChildren()){
+                                            postsRef.child(ds.getKey()).child("comment").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    for(DataSnapshot ds1: snapshot.getChildren()){
+                                                        if(ds1.child("username").getValue(String.class).equals(oldUsername)){
+                                                            postsRef.child(ds.getKey()).child("comment").child(ds1.getKey()).child("username").setValue(newUsername);
+                                                        }
+                                                    }
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {}
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+                                });
+
+                                //update chat
+                                DatabaseReference chatRef = database.getReference("chats");
+                                chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot ds: snapshot.getChildren()){
+                                            String[] usernames = ds.getKey().split("-_-");
+                                            if(usernames[0].equals(oldUsername) || usernames[1].equals(oldUsername)){
+                                                if(usernames[0].equals(oldUsername)) {
+                                                    usernames[0] = newUsername;
+                                                }else{
+                                                    usernames[1] = newUsername;
+                                                }
+                                                Arrays.sort(usernames);
+                                                for(DataSnapshot ds1: ds.getChildren()){
+                                                    String message = ds1.child("message").getValue(String.class);
+                                                    String sender = ds1.child("sender").getValue(String.class);
+                                                    if(sender.equals(oldUsername)){
+                                                        sender = newUsername;
+                                                    }
+                                                    long time  = ds1.child("time").getValue(Long.class);
+                                                    chatRef.child(usernames[0]+"-_-"+usernames[1]).child(ds1.getKey()).child("message").setValue(message);
+                                                    chatRef.child(usernames[0]+"-_-"+usernames[1]).child(ds1.getKey()).child("sender").setValue(sender);
+                                                    chatRef.child(usernames[0]+"-_-"+usernames[1]).child(ds1.getKey()).child("time").setValue(time);
+                                                    chatRef.child(ds.getKey()).removeValue();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
+
+                            }
+
                             myRef.child("password").setValue(password).addOnCompleteListener(task ->
                                     Toast.makeText(EditProfileActivity.this, "successfully updated", Toast.LENGTH_SHORT).show());
-
 
                         }
                     }

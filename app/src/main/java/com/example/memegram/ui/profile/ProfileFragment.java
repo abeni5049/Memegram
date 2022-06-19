@@ -61,9 +61,9 @@ public class ProfileFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference postsRef = database.getReference("posts");
         postsRef.addValueEventListener(new ValueEventListener() {
-            int numberOfPosts = 0;
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int numberOfPosts = 0;
                 progressBar.setVisibility(View.VISIBLE);
                 ImageURLs.clear();
                 for(DataSnapshot ds : snapshot.getChildren()) {
