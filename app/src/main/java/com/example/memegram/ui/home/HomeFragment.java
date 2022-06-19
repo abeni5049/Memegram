@@ -21,8 +21,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.memegram.EditTemplateActivity;
 import com.example.memegram.LoginActivity;
+import com.example.memegram.MainActivity;
 import com.example.memegram.ProfileActivity;
 import com.example.memegram.R;
 import com.example.memegram.chat.ChatListActivity;
@@ -38,6 +40,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class HomeFragment extends Fragment implements MemePostListAdapter.MyClickListener {
@@ -64,8 +68,46 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        HashSet<String> following = new HashSet<>();
+        HashMap<String,String> profileURLs = new HashMap<>();
+        DatabaseReference usersRef = database.getReference("users");
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uName = ds.child("username").getValue(String.class);
+                    if (uName.equals(LoginActivity.username1)) {
+                        for (DataSnapshot ds1: ds.child("following").getChildren()){
+                            if(ds1.getValue(Boolean.class)){
+                                following.add(ds1.getKey());
+                            }
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+        DatabaseReference myRef1 = database.getReference("users");
+        myRef1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String username = ds.child("username").getValue(String.class);
+                    if(following.contains(username)){
+                        profileURLs.put(username,ds.child("imageURL").getValue(String.class));
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+
         postsRef = database.getReference("posts");
         postsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -76,16 +118,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                     dataSnapshots.add(ds);
                     String username = ds.child("username").getValue(String.class);
 
-                    // get user profile image
-                    String profileURL= "https://firebasestorage.googleapis.com/v0/b/memegram-696a3.appspot.com/o/profile.jpeg?alt=media&token=8c91a398-8ca0-47a2-a8bf-5272aabce1e4";
-//                    DatabaseReference usersRef = database.getReference("users");
-//                    for (DataSnapshot ds2 : ) {
-//                        String uName = ds2.child("username").getValue(String.class);
-//                        if (username.equals(uName)) {
-//                            profileURL = ds.child("imageURL").getValue(String.class);
-//                        }
-//                    }
-                    //
+                    String profileURL= profileURLs.get(username);
 
                     String imageURL = ds.child("imageURL").getValue(String.class);
                     String location = ds.child("location").getValue(String.class);
@@ -99,7 +132,9 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                             numOfLikes += 1;
                         }
                     }
-                    posts.add(new Post(username,location,imageURL,numOfLikes,liked, profileURL));
+                    if(following.contains(username)) {
+                        posts.add(new Post(username, location, imageURL, numOfLikes, liked, profileURL));
+                    }
                 }
                 reverse(posts);
                 reverse(dataSnapshots);

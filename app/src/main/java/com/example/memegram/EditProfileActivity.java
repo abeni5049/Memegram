@@ -1,4 +1,4 @@
-    package com.example.memegram;
+package com.example.memegram;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-    public class EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +111,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
                             LoginActivity.username1 = newUsername;
                             myRef.child("password").setValue(password).addOnCompleteListener(task ->
                                     Toast.makeText(EditProfileActivity.this, "successfully updated", Toast.LENGTH_SHORT).show());
+
+
                         }
                     }
 

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.memegram.EditProfileActivity;
@@ -96,21 +97,51 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        int numOfFollowing = 0;
-        for (DataSnapshot ds1: LoginActivity.userDataSnapshot.child("following").getChildren()){
-            if(ds1.getValue(Boolean.class)){
-                numOfFollowing += 1;
+        DatabaseReference usersRef = database.getReference("users");
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int numOfFollowing = 0;
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uName = ds.child("username").getValue(String.class);
+                    if (uName.equals(LoginActivity.username1)) {
+                        for (DataSnapshot ds1: ds.child("following").getChildren()){
+                            if(ds1.getValue(Boolean.class)){
+                                numOfFollowing += 1;
+                            }
+                        }
+                    }
+                    numberOfFollowingText.setText(String.valueOf(numOfFollowing));
+                }
             }
-        }
-        numberOfFollowingText.setText(String.valueOf(numOfFollowing));
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
-        int numOfFollowers = 0;
-        for (DataSnapshot ds1: LoginActivity.userDataSnapshot.child("followers").getChildren()){
-            if(ds1.getValue(Boolean.class)){
-                numOfFollowers += 1;
+
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int numOfFollowers = 0;
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uName = ds.child("username").getValue(String.class);
+                    if (uName.equals(LoginActivity.username1)) {
+                        for (DataSnapshot ds1: ds.child("followers").getChildren()){
+                            if(ds1.getValue(Boolean.class)){
+                                numOfFollowers += 1;
+                            }
+                        }
+                    }
+                    numberOfFollowersText.setText(String.valueOf(numOfFollowers));
+                }
             }
-        }
-        numberOfFollowersText.setText(String.valueOf(numOfFollowers));
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
 
         editProfileButton.setOnClickListener(view ->{
             Intent intent = new Intent(getContext(), EditProfileActivity.class);
