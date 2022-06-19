@@ -39,6 +39,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
 
     private FragmentDiscoverBinding binding;
     private List<DiscoverItem> userList;
+    private List<DiscoverItem> userListFull;
     private DiscoverAdapter adapter;
     private ArrayList<DataSnapshot> dataSnapshots;
     private DatabaseReference usersRef;
@@ -54,6 +55,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
 
         dataSnapshots = new ArrayList<>();
         userList = new ArrayList<>();
+        userListFull = new ArrayList<>();
 
 
 
@@ -64,6 +66,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 userList.clear();
+                userListFull.clear();
                 dataSnapshots.clear();
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     String username = ds.child("username").getValue(String.class);
@@ -76,6 +79,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
                     if (!username.equals(LoginActivity.username1) && !isFollower){
                         dataSnapshots.add(ds);
                         userList.add(new DiscoverItem(username,location,imageURL));
+                        userListFull.add(new DiscoverItem(username,location,imageURL));
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -90,7 +94,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
 
         RecyclerView recyclerView = root.findViewById(R.id.discover_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        adapter = new DiscoverAdapter(getContext(),userList,this);
+        adapter = new DiscoverAdapter(getContext(),userList,userListFull,this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         return root;

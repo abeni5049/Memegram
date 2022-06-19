@@ -26,9 +26,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     private Context context;
     private MyClickListener listener;
 
-    DiscoverAdapter(Context context,List<DiscoverItem> userList,MyClickListener listener){
+    DiscoverAdapter(Context context,List<DiscoverItem> userList,List<DiscoverItem> userListFull,MyClickListener listener){
         this.userList = userList;
-        this.userListFull = new ArrayList<>(userList);
+        this.userListFull = userListFull;
         this.context = context;
         this.listener = listener;
     }
@@ -58,6 +58,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     }
 
     private Filter userFilter = new Filter() {
+
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             List<DiscoverItem> filteredList = new ArrayList<>();
