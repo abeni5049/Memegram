@@ -1,13 +1,14 @@
 package com.example.memegram.chat;
 
 public class Message {
-    String message,senderUsername,profileURL;
+    String message,senderUsername,profileURL,date,time;
     long createdAt;
-    public Message(String message, String senderUsername, long createdAt,String profileURL){
+    public Message(String message, String senderUsername,String profileURL,String date,String time){
         this.message = message;
         this.senderUsername = senderUsername;
-        this.createdAt = createdAt;
         this.profileURL = profileURL;
+        this.time = time;
+        this.date = date;
     }
 
     public long getCreatedAt() {
@@ -25,4 +26,9 @@ public class Message {
     public String getProfileURL() {
         return profileURL;
     }
+
+    public String getDate() { return date; }
+
+    public String getTime() {return time; }
+
 }

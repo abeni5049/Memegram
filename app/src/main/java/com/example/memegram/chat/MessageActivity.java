@@ -19,9 +19,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -41,8 +43,9 @@ public class MessageActivity extends AppCompatActivity {
         String[] str = {user1username,user2username};
         Arrays.sort(str);
         String combinedUsername = str[0]+"-_-"+str[1];
-
+        setTitle(user2username);
         ArrayList<Message> messages = new  ArrayList<>();
+        HashSet<String> dates = new HashSet<>();
 
         DatabaseReference chatsRef = database.getReference("chats").child(combinedUsername);
         chatsRef.addValueEventListener(new ValueEventListener() {
@@ -50,14 +53,28 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 try {
                     messages.clear();
-                    adapter.notifyDataSetChanged();
+                    dates.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         String messageStr = ds.child("message").getValue(String.class);
                         String senderUsername = ds.child("sender").getValue(String.class);
                         long createdAt = ds.child("time").getValue(Long.class);
                         String senderProfileURL = "";//TODO
-                        messages.add(new Message(messageStr,senderUsername,createdAt,senderProfileURL));
+
+                        String pattern = "HH:mm";
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                        String time = simpleDateFormat.format(createdAt);
+
+                        String pattern1 = "MMMM dd";
+                        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
+                        String date = simpleDateFormat1.format(createdAt);
+                        if(dates.contains(date)){
+                            date = "";
+                        }else{
+                            dates.add(date);
+                        }
+                        messages.add(new Message(messageStr,senderUsername,senderProfileURL,date,time));
                     }
+                    recyclerView.scrollToPosition(messages.size()-1);
                     adapter.notifyDataSetChanged();
                 }catch (Exception e){
                     // TODO: CHECK THE EXCEPTION AND FIX IT

@@ -26,7 +26,6 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<Message> mMessageList;
-    private HashSet<String> dates = new HashSet<>();
 
     public MessageListAdapter(Context context, List<Message> messageList) {
         mContext = context;
@@ -98,19 +97,14 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         void bind(Message message) {
             messageText.setText(message.getMessage());
 
-            String pattern = "HH:mm";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-            String time = simpleDateFormat.format(message.getCreatedAt());
-            timeText.setText(time);
 
-            String pattern1 = "MMMM dd";
-            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
-            String date = simpleDateFormat1.format(message.getCreatedAt());
-            if(dates.contains(date)){
+            timeText.setText(message.getTime());
+
+
+            if(message.getDate().isEmpty()){
                 dateText.setVisibility(View.GONE);
             }else {
-                dates.add(date);
-                dateText.setText(date);
+                dateText.setText(message.getDate());
                 dateText.setVisibility(View.VISIBLE);
             }
         }
@@ -132,19 +126,11 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             messageText.setText(message.getMessage());
 
-            String pattern = "HH:mm";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-            String time = simpleDateFormat.format(message.getCreatedAt());
-            timeText.setText(time);
-
-            String pattern1 = "MMMM dd";
-            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat(pattern1);
-            String date = simpleDateFormat1.format(message.getCreatedAt());
-            if(dates.contains(date)){
+            timeText.setText(message.getTime());
+            if(message.getDate().isEmpty()){
                 dateText.setVisibility(View.GONE);
             }else {
-                dates.add(date);
-                dateText.setText(date);
+                dateText.setText(message.getDate());
                 dateText.setVisibility(View.VISIBLE);
             }
         }
