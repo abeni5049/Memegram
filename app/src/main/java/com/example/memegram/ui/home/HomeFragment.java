@@ -102,6 +102,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                     posts.add(new Post(username,location,imageURL,numOfLikes,liked, profileURL));
                 }
                 reverse(posts);
+                reverse(dataSnapshots);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -142,31 +143,30 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
     public void onLikeButtonClick(int pos) {
         DataSnapshot ds = dataSnapshots.get(pos);
         postsRef.child(ds.getKey()).child("like").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {
-        });
+            String username = ds.child("username").getValue(String.class);
 
-        String username = ds.child("username").getValue(String.class);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef1 = database.getReference("users");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef1 = database.getReference("users");
-
-        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    String uName = ds.child("username").getValue(String.class);
-                    if(uName.equals(username)){
-                        DatabaseReference myref = myRef1.child(ds.getKey()).child("notifications").push();
-                        myref.child("postId").setValue(ds.getKey());
-                        myref.child("type").setValue("like");
-                        myref.child("username").setValue(LoginActivity.username1).addOnCompleteListener(task -> {
-                        });
+            myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        String uName = ds.child("username").getValue(String.class);
+                        if(uName.equals(username)){
+                            DatabaseReference myref = myRef1.child(ds.getKey()).child("notifications").push();
+                            myref.child("postId").setValue(ds.getKey());
+                            myref.child("type").setValue("like");
+                            myref.child("username").setValue(LoginActivity.username1).addOnCompleteListener(task -> {
+                            });
+                        }
                     }
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
+                }
+            });
         });
 
     }

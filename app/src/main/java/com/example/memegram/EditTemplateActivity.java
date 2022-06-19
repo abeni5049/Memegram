@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +18,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,11 +29,13 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.memegram.helper.MemeClassifier;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -55,16 +60,22 @@ import java.util.Date;
 import java.util.Locale;
 
 public class EditTemplateActivity extends AppCompatActivity {
+    
+    private  MemeClassifier memeClassifier;
+    private FirebaseStorage storage;
+    private ImageView template_image;
+    private boolean isMeme;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_template);
-        ImageView template_image = findViewById(R.id.template_image);
+        template_image = findViewById(R.id.template_image);
         EditText topEditText = findViewById(R.id.top_edit_text);
         EditText bottomEditText = findViewById(R.id.bottom_edit_text);
-        Button saveButton = findViewById(R.id.post_button);
+        Button postButton = findViewById(R.id.post_button);
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        storage = FirebaseStorage.getInstance();
 
         int ImageURL = getIntent().getExtras().getInt("ImageURL");
         template_image.setImageResource(ImageURL);
@@ -118,84 +129,98 @@ public class EditTemplateActivity extends AppCompatActivity {
             }
         });
 
-        saveButton.setOnClickListener(View->{
-            ProgressDialog progressDialog
-                    = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
-            Date now = new Date();
-            String fileName = LoginActivity.username1+"-"+formatter.format(now);
-            StorageReference memesRef = storage.getReference().child("memes").child(fileName+".jpg");
-
-            // Get the data from an ImageView as bytes
-            template_image.setDrawingCacheEnabled(true);
-            template_image.buildDrawingCache();
-            Bitmap bitmap = ((BitmapDrawable) template_image.getDrawable()).getBitmap();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] data = baos.toByteArray();
-
-            UploadTask uploadTask = memesRef.putBytes(data);
-
-            uploadTask.addOnFailureListener(exception ->
-                    Toast.makeText(EditTemplateActivity.this, "error: "+exception, Toast.LENGTH_SHORT).show())
-                .addOnSuccessListener(taskSnapshot -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(EditTemplateActivity.this, "uploaded successfully", Toast.LENGTH_SHORT).show();
-                }).addOnProgressListener(
-                    taskSnapshot -> {
-                        double progress
-                                = (100.0
-                                * taskSnapshot.getBytesTransferred()
-                                / taskSnapshot.getTotalByteCount());
-                        progressDialog.setMessage(
-                                "Uploaded "
-                                        + (int)progress + "%");
-                    });
-            Task<Uri> urlTask = uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                return memesRef.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    String imageURL = downloadUri.toString();
-                    String location = "Addis Ababa, Ethiopia";
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef1 = database.getReference("posts");
-
-                    myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            DatabaseReference myRef = database.getReference("posts").push();
-                            myRef.child("username").setValue(LoginActivity.username1);
-                            myRef.child("imageURL").setValue(imageURL);
-                            myRef.child("like").child(LoginActivity.username1).setValue(false);
-                            myRef.child("comment");
-                            myRef.child("location").setValue(location).addOnCompleteListener(task -> {
-                                Toast.makeText(EditTemplateActivity.this, "yay", Toast.LENGTH_SHORT).show();
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(EditTemplateActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(this, "error occurred", Toast.LENGTH_SHORT).show();
-                }
-            });
+       
+        postButton.setOnClickListener(View->{
+            if(detectMeme()){
+                uploadMeme();
+            }else{
+                Toast.makeText(this, "not meme", Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
 
 
 
+    private boolean detectMeme(){
+        memeClassifier = MemeClassifier.getInstance(this);
+        template_image.setDrawingCacheEnabled(true);
+        template_image.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) template_image.getDrawable()).getBitmap();
+        new BackgroundProcessLocal().execute(bitmap);
+        return isMeme;
+    }
 
+    private void uploadMeme(){
+        ProgressDialog progressDialog
+                = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
+        Date now = new Date();
+        String fileName = LoginActivity.username1+"-"+formatter.format(now);
+        StorageReference memesRef = storage.getReference().child("memes").child(fileName+".jpg");
+
+        // Get the data from an ImageView as bytes
+        template_image.setDrawingCacheEnabled(true);
+        template_image.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) template_image.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = memesRef.putBytes(data);
+
+        uploadTask.addOnFailureListener(exception ->
+                Toast.makeText(EditTemplateActivity.this, "error: "+exception, Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(taskSnapshot -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(EditTemplateActivity.this, "uploaded successfully", Toast.LENGTH_SHORT).show();
+                }).addOnProgressListener(
+                taskSnapshot -> {
+                    double progress
+                            = (100.0
+                            * taskSnapshot.getBytesTransferred()
+                            / taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage(
+                            "Uploaded "
+                                    + (int)progress + "%");
+                });
+        Task<Uri> urlTask = uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return memesRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                String imageURL = downloadUri.toString();
+                String location = "Addis Ababa, Ethiopia";
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef1 = database.getReference("posts");
+
+                myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        DatabaseReference myRef = database.getReference("posts").push();
+                        myRef.child("username").setValue(LoginActivity.username1);
+                        myRef.child("imageURL").setValue(imageURL);
+                        myRef.child("like").child(LoginActivity.username1).setValue(false);
+                        myRef.child("comment");
+                        myRef.child("location").setValue(location);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(EditTemplateActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(this, "error occurred", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     public Bitmap addPaddingTopForBitmap(Bitmap bitmap, int paddingTop) {
         Bitmap outputBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight() + paddingTop, Bitmap.Config.ARGB_8888);
@@ -299,5 +324,31 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
 
+    private class BackgroundProcessLocal extends AsyncTask<Bitmap, Void, String> {
+
+        String class_label = "";
+        Bitmap bitmap = null;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+
+            bitmap = bitmaps[0];
+            Bitmap reshapeBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, false);
+            class_label = memeClassifier.classifyFrame(reshapeBitmap);
+            return class_label;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            isMeme = s.equals(MemeClassifier.IMAGE_STATUS_MEME);
+        }
+    }
 
 }

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:paddingTop="4dp" >
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,6 +23,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:layout_toEndOf="@id/profile_image"
             android:paddingLeft="8dp"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
@@ -50,7 +51,17 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/textViewOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="&#8942;"
+            android:textAppearance="?android:textAppearanceLarge" />
+
+    </RelativeLayout>
 
 
     <ImageView
