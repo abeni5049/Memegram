@@ -64,7 +64,6 @@ public class EditTemplateActivity extends AppCompatActivity {
     private  MemeClassifier memeClassifier;
     private FirebaseStorage storage;
     private ImageView template_image;
-    private boolean isMeme;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,24 +130,19 @@ public class EditTemplateActivity extends AppCompatActivity {
 
        
         postButton.setOnClickListener(View->{
-            if(detectMeme()){
-                uploadMeme();
-            }else{
-                Toast.makeText(this, "not meme", Toast.LENGTH_SHORT).show();
-            }
+            detectMeme();
         });
 
     }
 
 
 
-    private boolean detectMeme(){
+    private void detectMeme(){
         memeClassifier = MemeClassifier.getInstance(this);
         template_image.setDrawingCacheEnabled(true);
         template_image.buildDrawingCache();
         Bitmap bitmap = ((BitmapDrawable) template_image.getDrawable()).getBitmap();
         new BackgroundProcessLocal().execute(bitmap);
-        return isMeme;
     }
 
     private void uploadMeme(){
@@ -347,7 +341,12 @@ public class EditTemplateActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            isMeme = s.equals(MemeClassifier.IMAGE_STATUS_MEME);
+            boolean isMeme = s.equals(MemeClassifier.IMAGE_STATUS_MEME);
+            if(isMeme){
+                uploadMeme();
+            }else{
+                Toast.makeText(getApplicationContext(), "not meme", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

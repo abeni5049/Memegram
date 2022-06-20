@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -19,6 +20,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
+
+<!--    <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_width="match_parent">-->
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/standard_bottom_sheet"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            style="?attr/bottomSheetStyle"-->
+<!--            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
+
+<!--                &lt;!&ndash; Bottom sheet contents. &ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Report" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="spam"/>-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/bottomsheet_button"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="action" />-->
+
+<!--            </LinearLayout>-->
+
+
+<!--        </FrameLayout>-->
+
+<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
 
 </RelativeLayout>
