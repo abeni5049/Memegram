@@ -3,8 +3,14 @@ package com.example.memegram;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +19,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.memegram.ui.profile.ProfileFragment;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,8 +29,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -34,6 +48,10 @@ public class EditProfileActivity extends AppCompatActivity {
     EditText nameEditText,usernameEditText,newPasswordEditText,oldPasswordEditText,confirmPasswordEditText;
     FirebaseDatabase database;
     FirebaseAuth mAuth;
+    public final int PICK_IMAGE = 1;
+    private static final int REQUEST_WRITE_PERMISSION = 786;
+    CircleImageView profileImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +62,12 @@ public class EditProfileActivity extends AppCompatActivity {
         newPasswordEditText = findViewById(R.id.new_password_text);
         oldPasswordEditText = findViewById(R.id.old_password_text);
         confirmPasswordEditText = findViewById(R.id.confirm_password_text);
-        CircleImageView profileImage = findViewById(R.id.profile_image);
+        profileImage = findViewById(R.id.profile_image);
         TextView changeProfileImageText = findViewById(R.id.change_profile_image_text);
         Button updateButton = findViewById(R.id.update_button);
 
         changeProfileImageText.setOnClickListener(view -> {
-
+           openImagePicker();
         });
 
         mAuth = FirebaseAuth.getInstance();
@@ -66,7 +84,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         String ProfileImageURL = ds.child("imageURL").getValue(String.class);
                         usernameEditText.setText(username);
                         nameEditText.setText(name);
-                        Glide.with(getApplicationContext()).load(ProfileImageURL).into(profileImage);
+                        Glide.with(getApplicationContext()).load(ProfileImageURL).placeholder(R.drawable.profile).into(profileImage);
                     }
                 }
             }
@@ -102,7 +120,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                     }else{
                                         user.updatePassword(newPassword)
                                                 .addOnCompleteListener(this, task1 -> {
-                                                    updateInfo();
+                                                    uploadImage();
                                                 });
                                     }
                                 }else{
@@ -115,14 +133,58 @@ public class EditProfileActivity extends AppCompatActivity {
                 
             }
             else {
-                updateInfo();
+                uploadImage();
             }
         });
 
 
     }
 
-    private void updateInfo(){
+
+    private void uploadImage(){
+        ProgressDialog progressDialog
+                = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
+        Date now = new Date();
+        String fileName = LoginActivity.username1+"-"+formatter.format(now);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference memesRef = storage.getReference().child("memes").child(fileName+".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Bitmap pickedBitmap = ((BitmapDrawable)profileImage. getDrawable()). getBitmap();
+        pickedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = memesRef.putBytes(data);
+
+        uploadTask.addOnFailureListener(exception ->
+                Toast.makeText(this, "error: "+exception, Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(taskSnapshot -> {
+                    progressDialog.dismiss();
+                }).addOnProgressListener(
+                taskSnapshot -> {
+                    double progress= (100.0 * taskSnapshot.getBytesTransferred()/ taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploaded "+ (int)progress + "%");
+                });
+        Task<Uri> urlTask = uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return memesRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                String profileURL = downloadUri.toString();
+                updateInfo(profileURL);
+            } else {
+                Toast.makeText(this, "error occurred", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void updateInfo(String profileURL){
         String name = nameEditText.getText().toString().trim();
         String newUsername = usernameEditText.getText().toString().trim();
         DatabaseReference myRef = database.getReference("users");
@@ -148,6 +210,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 } else if (currentUseSnapshot != null) {
                     DatabaseReference myRef = database.getReference("users").child(currentUseSnapshot);
                     myRef.child("username").setValue(newUsername);
+                    myRef.child("imageURL").setValue(profileURL);
                     String oldUsername = LoginActivity.username1;
                     if(!oldUsername.equals(newUsername)) {
                         LoginActivity.username1 = newUsername;
@@ -313,4 +376,35 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void openImagePicker() {
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, PICK_IMAGE);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            openImagePicker();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            try {
+                Bitmap pickedBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                profileImage.setImageBitmap(pickedBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
