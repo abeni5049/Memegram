@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ import com.example.memegram.databinding.FragmentHomeBinding;
 import com.example.memegram.helper.RecyclerItemClickListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -233,5 +235,116 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
     @Override
     public void onDoubleTap(int pos) {
         
+    }
+
+    @Override
+    public void onOptionClick(int pos) {
+        showBottomSheetDialog(pos);
+    }
+
+    private void showBottomSheetDialog(int pos){
+        final BottomSheetDialog reportSheet = new BottomSheetDialog(getContext());
+        reportSheet.setContentView(R.layout.report_sheet);
+
+        LinearLayout hateSpeech = reportSheet.findViewById(R.id.hate_speech);
+        LinearLayout violence = reportSheet.findViewById(R.id.violence);
+        LinearLayout childAbuse = reportSheet.findViewById(R.id.child_abuse);
+        LinearLayout spam = reportSheet.findViewById(R.id.spam);
+        LinearLayout notMeme = reportSheet.findViewById(R.id.not_meme);
+        LinearLayout pornography = reportSheet.findViewById(R.id.pornography);
+        LinearLayout copyright = reportSheet.findViewById(R.id.copyright);
+        LinearLayout other = reportSheet.findViewById(R.id.other);
+        
+        hateSpeech.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("hate speech").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+
+        violence.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("violence").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+        
+        childAbuse.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("child abuse").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+        
+        spam.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("spam").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+        
+        notMeme.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("not meme").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+        
+        pornography.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("pornography").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+
+
+        copyright.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("copyright").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+
+
+        other.setOnClickListener(view -> {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reports = database.getReference("reports");
+            DatabaseReference reportID = reports.push();
+            reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
+            reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("type").setValue("other").addOnCompleteListener(task -> {
+                Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
+            });
+        });
+
+        reportSheet.show();
     }
 }

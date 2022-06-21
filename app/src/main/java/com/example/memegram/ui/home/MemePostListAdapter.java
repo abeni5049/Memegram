@@ -49,7 +49,7 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
     }
 
     public class MemePostListHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView usernameText,locationText,numberOfLikeText;
+        private TextView usernameText,locationText,numberOfLikeText,option;
         private ImageView postImage;
         private CircleImageView profileImage;
         private CheckBox likeButton;
@@ -65,11 +65,13 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
             commentButton = itemView.findViewById(R.id.comment_button);
             numberOfLikeText = itemView.findViewById(R.id.number_of_like_text);
             profileImage  = itemView.findViewById(R.id.profile_image);
+            option = itemView.findViewById(R.id.textViewOptions);
 
             likeButton.setOnClickListener(this);
             commentButton.setOnClickListener(this);
             postImage.setOnClickListener(this);
             usernameText.setOnClickListener(this);
+            option.setOnClickListener(this);
         }
 
         public void setDetails(Post post) {
@@ -101,6 +103,8 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
                 listener.onDoubleTap(this.getLayoutPosition());
             }else if(view.getId() == usernameText.getId()){
                 listener.onUsernameTextClick(this.getLayoutPosition());
+            }else if(view.getId() == option.getId()){
+                listener.onOptionClick(this.getLayoutPosition());
             }
 
         }
@@ -112,6 +116,7 @@ public class MemePostListAdapter extends RecyclerView.Adapter<MemePostListAdapte
         void onCommentButtonClick(int pos);
         void onUsernameTextClick(int pos);
         void onDoubleTap(int pos);
+        void onOptionClick(int pos);
     }
 
 }
