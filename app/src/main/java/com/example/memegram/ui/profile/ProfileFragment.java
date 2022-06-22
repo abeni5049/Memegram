@@ -49,6 +49,7 @@ public class ProfileFragment extends Fragment {
         TextView numberOfPostsText = root.findViewById(R.id.num_of_posts);
         TextView numberOfFollowersText = root.findViewById(R.id.num_of_followers);
         TextView numberOfFollowingText = root.findViewById(R.id.num_of_following);
+        TextView emptyView = root.findViewById(R.id.empty_view);
         Glide.with(getContext()).load(LoginActivity.profileImageURL).into(profileImage);
 
 
@@ -88,6 +89,11 @@ public class ProfileFragment extends Fragment {
                 reverse(ImageURLs);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
+                if(ImageURLs.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override

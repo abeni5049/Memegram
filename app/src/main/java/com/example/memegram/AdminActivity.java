@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.memegram.ui.profile.GridMemePostListAdapter;
@@ -30,6 +33,8 @@ public class AdminActivity extends AppCompatActivity implements ReportListAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+        TextView emptyView = findViewById(R.id.empty_view);
+        setTitle("Admin Panel");
 
         reports = new HashMap<>();
         imageURLs = new ArrayList<>();
@@ -64,6 +69,11 @@ public class AdminActivity extends AppCompatActivity implements ReportListAdapte
                     }
                 }
                 adapter.notifyDataSetChanged();
+                if(reports.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -71,6 +81,8 @@ public class AdminActivity extends AppCompatActivity implements ReportListAdapte
 
             }
         });
+
+
 
 
     }

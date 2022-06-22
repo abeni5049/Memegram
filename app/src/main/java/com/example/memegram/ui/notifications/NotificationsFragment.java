@@ -40,6 +40,7 @@ public class NotificationsFragment extends Fragment {
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
+        TextView emptyView = root.findViewById(R.id.empty_view);
 
 
         notifications = new ArrayList<>();
@@ -69,6 +70,11 @@ public class NotificationsFragment extends Fragment {
                 reverse(notifications);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
+                if(notifications.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
@@ -36,6 +37,8 @@ public class ChatListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.chat_list_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        TextView emptyView = findViewById(R.id.empty_view);
+
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -47,15 +50,21 @@ public class ChatListActivity extends AppCompatActivity {
                 for(DataSnapshot ds: snapshot.getChildren()){
                     String[] usernames = ds.getKey().split("-_-");
                     if(usernames[0].equals(LoginActivity.username1) || usernames[1].equals(LoginActivity.username1)){
-                        int imageURL = getResources().getIdentifier("memegram_logo","drawable", getPackageName());
+                        //TODO: change image
+                        int imageURL = getResources().getIdentifier("profile","drawable", getPackageName());
                         if(usernames[0].equals(LoginActivity.username1)) {
-                            chatLists.add(new Chat(imageURL,"Hi Dawit, how are you",usernames[1]));
+                            chatLists.add(new Chat(imageURL,"",usernames[1]));
                         }else{
-                            chatLists.add(new Chat(imageURL,"Hi Dawit, how are you",usernames[0]));
+                            chatLists.add(new Chat(imageURL,"",usernames[0]));
                         }
                     }
                 }
                 adapter.notifyDataSetChanged();
+                if(chatLists.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -75,7 +84,6 @@ public class ChatListActivity extends AppCompatActivity {
                     }
 
                     @Override public void onLongItemClick(View view, int position) {
-                        // do whatever
                     }
                 })
         );

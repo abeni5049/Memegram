@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
 
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
+        TextView emptyView = root.findViewById(R.id.empty_view);
 
         MemePostListAdapter adapter = new MemePostListAdapter(getContext(),posts,this);
         RecyclerView recyclerView = root.findViewById(R.id.list);
@@ -146,6 +147,12 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                 reverse(dataSnapshots);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
+
+                if(posts.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override

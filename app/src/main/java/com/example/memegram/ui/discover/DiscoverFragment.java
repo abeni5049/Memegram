@@ -51,6 +51,8 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
         View root = binding.getRoot();
         setHasOptionsMenu(true);
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
+        TextView emptyView = root.findViewById(R.id.empty_view);
+
 
 
         dataSnapshots = new ArrayList<>();
@@ -61,7 +63,7 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         usersRef = database.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressBar.setVisibility(View.VISIBLE);
@@ -84,6 +86,11 @@ public class DiscoverFragment extends Fragment implements DiscoverAdapter.MyClic
                 }
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
+                if(userListFull.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
             }
 
             @Override
