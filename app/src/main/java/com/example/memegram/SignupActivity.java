@@ -109,6 +109,7 @@ public class SignupActivity extends AppCompatActivity {
                             myRef.child("location").setValue("Addis Ababa, Ethiopia");
                             myRef.child("following").child(username).setValue(false);
                             myRef.child("followers").child(username).setValue(false);
+                            myRef.child("isAdmin").setValue(false);
                             myRef.child("imageURL").setValue("https://firebasestorage.googleapis.com/v0/b/memegram-696a3.appspot.com/o/profile.jpeg?alt=media&token=8c91a398-8ca0-47a2-a8bf-5272aabce1e4");
                             myRef.child("email").setValue(email).addOnCompleteListener(task1 -> {
                                 signupButton.setEnabled(true);

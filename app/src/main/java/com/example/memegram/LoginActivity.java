@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     public static  String username1="";
     public static  String profileImageURL;
     public static String mEmail;
+    private static boolean mIsAdmin;
     public static DataSnapshot userDataSnapshot;
     private FirebaseAuth mAuth;
     TextView registerText;
@@ -58,10 +59,12 @@ public class LoginActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds : snapshot.getChildren()) {
                             String email = ds.child("email").getValue(String.class);
+                            boolean isAdmin = ds.child("isAdmin").getValue(Boolean.class);
                             String uName = ds.child("username").getValue(String.class).toLowerCase();
                             String imageURL = ds.child("imageURL").getValue(String.class);
                             profileImageURL = imageURL;
                             if (uName.equals(username)){
+                                mIsAdmin = isAdmin;
                                 mEmail = email;
                                 username1 = username;
                                 userDataSnapshot = ds;
@@ -122,8 +125,13 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             boolean emailVerified = user.isEmailVerified();
                             if (emailVerified) {
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra("username", username1);
+                                Intent intent;
+                                if(mIsAdmin){
+                                    intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                }else{
+                                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.putExtra("username", username1);
+                                }
                                 startActivity(intent);
                             } else {
                                 user.sendEmailVerification()

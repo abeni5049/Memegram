@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
     private FragmentHomeBinding binding;
     private ArrayList<Post> posts;
+    private ArrayList<String> postURLs;
     public  static ArrayList<DataSnapshot> dataSnapshots;
     private DatabaseReference postsRef;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -61,6 +62,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
 
         posts = new ArrayList<>();
         dataSnapshots = new ArrayList<>();
+        postURLs = new ArrayList<>();
 
 
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
@@ -137,6 +139,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                     if(following.contains(username)) {
                         posts.add(new Post(username, location, imageURL, numOfLikes, liked, profileURL));
                         dataSnapshots.add(ds);
+                        postURLs.add(imageURL);
                     }
                 }
                 reverse(posts);
@@ -261,6 +264,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("hate speech").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -272,6 +276,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("violence").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -283,6 +288,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("child abuse").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -294,6 +300,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("spam").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -305,6 +312,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("not meme").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -316,6 +324,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("pornography").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -328,6 +337,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("copyright").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
@@ -340,6 +350,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
             DatabaseReference reportID = reports.push();
             reportID.child("postID").setValue(dataSnapshots.get(pos).getKey());
             reportID.child("username").setValue(LoginActivity.username1);
+            reportID.child("imageURL").setValue(postURLs.get(pos));
             reportID.child("type").setValue("other").addOnCompleteListener(task -> {
                 Toast.makeText(getContext(), "post reported", Toast.LENGTH_SHORT).show();
             });
