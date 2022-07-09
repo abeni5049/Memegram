@@ -12,12 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.memegram.EditProfileActivity;
+import com.example.memegram.FollowersActivity;
+import com.example.memegram.FollowingActivity;
 import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
 import com.example.memegram.databinding.FragmentProfileBinding;
@@ -45,12 +48,30 @@ public class ProfileFragment extends Fragment {
         View root = binding.getRoot();
         ProgressBar progressBar = root.findViewById(R.id.progress_bar);
         Button editProfileButton = root.findViewById(R.id.edit_profile_button);
+        Button logoutButton = root.findViewById(R.id.logout_button);
         CircleImageView profileImage = root.findViewById(R.id.profile_image);
         TextView numberOfPostsText = root.findViewById(R.id.num_of_posts);
         TextView numberOfFollowersText = root.findViewById(R.id.num_of_followers);
         TextView numberOfFollowingText = root.findViewById(R.id.num_of_following);
         TextView emptyView = root.findViewById(R.id.empty_view);
-        Glide.with(getContext()).load(LoginActivity.profileImageURL).into(profileImage);
+        LinearLayout followLayout = root.findViewById(R.id.followers_layout);
+        LinearLayout followingLayout = root.findViewById(R.id.following_layout);
+
+        logoutButton.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(),LoginActivity.class);
+            startActivity(intent);
+        });
+        followLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), FollowersActivity.class);
+            startActivity(intent);
+        });
+
+        followingLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), FollowingActivity.class);
+            startActivity(intent);
+        });
+
+        Glide.with(getContext()).load(LoginActivity.profileImageURL).placeholder(R.drawable.profile).into(profileImage);
 
 
         ImageURLs = new ArrayList<>();

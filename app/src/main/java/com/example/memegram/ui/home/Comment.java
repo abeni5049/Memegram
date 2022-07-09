@@ -2,16 +2,16 @@ package com.example.memegram.ui.home;
 
 
 public class Comment {
-    int imageURL;
-    String username,CommentText,timeText;
-    public  Comment(int imageURL, String username,String CommentText, String timeText){
+
+    String username,CommentText,timeText,imageURL;
+    public  Comment(String imageURL, String username,String CommentText, String timeText){
         this.imageURL = imageURL;
         this.CommentText = CommentText;
         this.username = username;
         this.timeText = timeText;
     }
 
-    public int getImageURL() {
+    public String getImageURL() {
         return imageURL;
     }
 

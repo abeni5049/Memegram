@@ -84,6 +84,8 @@ public class PostFragment extends Fragment implements TemplateGridAdapter.OnTemp
         ImageURLs = new ArrayList<>();
         int res1 = getResources().getIdentifier("gallery","drawable", getContext().getPackageName());
         ImageURLs.add(res1);
+        int id11 = getResources().getIdentifier("sample_template2","drawable", getContext().getPackageName());
+        ImageURLs.add(id11);
         for(int i = 1; i <= 38;i++){
             int res = getResources().getIdentifier("template"+i,"drawable", getContext().getPackageName());
             ImageURLs.add(res);

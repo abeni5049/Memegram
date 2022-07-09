@@ -64,7 +64,7 @@ public class NotificationsFragment extends Fragment {
                     }else if(type.equals("comment")){
                         notificationText = "commented on your meme";
                     }
-                    int imageURL = getResources().getIdentifier("memegram_logo","drawable", getContext().getPackageName());
+                    int imageURL = getResources().getIdentifier("profile","drawable", getContext().getPackageName());
                     notifications.add(new Notification(imageURL,username,notificationText,"5h"));
                 }
                 reverse(notifications);

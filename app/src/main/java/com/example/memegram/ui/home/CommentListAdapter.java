@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.memegram.R;
 import com.example.memegram.ui.home.Comment;
 
@@ -37,11 +38,12 @@ public class CommentListAdapter extends RecyclerView.Adapter<com.example.memegra
 
     @Override
     public void onBindViewHolder(@NonNull com.example.memegram.ui.home.CommentListAdapter.CommentsListHolder holder, int position) {
-        Comment Comment = Comments.get(position);
-        holder.CommentText.setText(Comment.getCommentText());
-        holder.timeText.setText(Comment.getTimeText());
-        holder.usernameText.setText(Comment.getUsername());
-        holder.profileImage.setImageResource(Comment.getImageURL());
+        Comment comment = Comments.get(position);
+        holder.CommentText.setText(comment.getCommentText());
+        holder.timeText.setText(comment.getTimeText());
+        holder.usernameText.setText(comment.getUsername());
+        Glide.with(mContext).load( comment.getImageURL()).placeholder(R.drawable.profile).into(holder.profileImage);
+
     }
 
     @Override

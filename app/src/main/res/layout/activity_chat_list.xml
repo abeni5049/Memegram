@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".chat.ChatListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -10,6 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="1dp"
+        />
+
+
+    <ProgressBar
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:text="No chats yet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark"
+        android:textSize="16sp"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
         />
 
 </RelativeLayout>

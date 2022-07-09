@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
 import com.example.memegram.ui.home.MemePostListAdapter;
 
@@ -36,7 +38,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
     @Override
     public void onBindViewHolder(@NonNull ChatListHolder holder, int position) {
         Chat chat = chatLists.get(position);
-        holder.profileImage.setImageResource(chat.getImageURL());
+        Glide.with(mContext).load(chat.getImageURL()).placeholder(R.drawable.profile).into(holder.profileImage);
         holder.latestMessage.setText(chat.getLatestMessage());
         holder.senderUsername.setText(chat.getSenderUsername());
     }

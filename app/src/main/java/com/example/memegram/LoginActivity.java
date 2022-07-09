@@ -31,13 +31,13 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     TextView registerText;
     Button loginButton;
-    EditText passwordText;
+    EditText passwordText,usernameText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        EditText usernameText = findViewById(R.id.username_text_field);
+        usernameText = findViewById(R.id.username_text_field);
         passwordText = findViewById(R.id.password_text_field);
         mAuth = FirebaseAuth.getInstance();
         
@@ -59,7 +59,10 @@ public class LoginActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds : snapshot.getChildren()) {
                             String email = ds.child("email").getValue(String.class);
-                            boolean isAdmin = ds.child("isAdmin").getValue(Boolean.class);
+                            boolean isAdmin = false;
+                            if(ds.hasChild("isAdmin")) {
+                                 isAdmin = ds.child("isAdmin").getValue(Boolean.class);
+                            }
                             String uName = ds.child("username").getValue(String.class).toLowerCase();
                             String imageURL = ds.child("imageURL").getValue(String.class);
                             profileImageURL = imageURL;
@@ -151,5 +154,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        passwordText.setText("");
+        usernameText.setText("");
+    }
 }

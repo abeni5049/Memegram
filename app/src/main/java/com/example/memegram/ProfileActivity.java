@@ -25,11 +25,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
+
+    HashSet<String> following;
+    DataSnapshot uDataSnapshot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,19 +46,19 @@ public class ProfileActivity extends AppCompatActivity {
         TextView numberOfFollowersText = findViewById(R.id.num_of_followers2);
         TextView numberOfFollowingText = findViewById(R.id.num_of_following2);
         Button messageButton = findViewById(R.id.message_button);
+        following = new HashSet<>();
 
         String uname = getIntent().getExtras().getString("username");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef1 = database.getReference("users");
-        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference usersRef = database.getReference("users");
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     String name = ds.child("username").getValue(String.class);
                     if(name.equals(uname)){
-
+                        uDataSnapshot = ds;
                         Glide.with(getApplicationContext()).load( ds.child("imageURL").getValue(String.class)  ).into(profileImage);
-
 
                         int numOfFollowing = 0;
                         for (DataSnapshot ds1: ds.child("following").getChildren()){
@@ -67,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
                         for (DataSnapshot ds1: ds.child("followers").getChildren()){
                             if(ds1.getValue(Boolean.class)){
                                 numOfFollowers += 1;
+                                following.add(ds1.getKey());
                             }
                         }
                         numberOfFollowersText.setText(String.valueOf(numOfFollowers));
@@ -74,6 +80,63 @@ public class ProfileActivity extends AppCompatActivity {
 
                     }
                 }
+                Button followButton = findViewById(R.id.follow_button);
+                if(following.contains(LoginActivity.username1)){
+                    followButton.setText("unfollow");
+                }else{
+                    followButton.setText("follow");
+                }
+                followButton.setOnClickListener(view -> {
+                    String s = followButton.getText().toString();
+                    if(s.equals("follow")){
+                        String uname = uDataSnapshot.child("username").getValue(String.class);
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef1 = database.getReference("users");
+                        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    String uName = ds.child("username").getValue(String.class);
+                                    if (uName.equals(LoginActivity.username1)){
+                                        usersRef.child(ds.getKey()).child("following").child(uname).setValue(true).addOnCompleteListener(task -> {
+                                        });
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+
+                        usersRef.child(uDataSnapshot.getKey()).child("followers").child(LoginActivity.username1).setValue(true).addOnCompleteListener(task -> {});
+
+                    }else{
+                        String uname = uDataSnapshot.child("username").getValue(String.class);
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef1 = database.getReference("users");
+                        myRef1.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    String uName = ds.child("username").getValue(String.class);
+                                    if (uName.equals(LoginActivity.username1)){
+                                        usersRef.child(ds.getKey()).child("following").child(uname).setValue(false).addOnCompleteListener(task -> {
+                                        });
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+
+                        usersRef.child(uDataSnapshot.getKey()).child("followers").child(LoginActivity.username1).setValue(false).addOnCompleteListener(task -> {});
+                    }
+                });
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

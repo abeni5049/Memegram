@@ -145,6 +145,7 @@ public class HomeFragment extends Fragment implements MemePostListAdapter.MyClic
                 }
                 reverse(posts);
                 reverse(dataSnapshots);
+                reverse(postURLs);
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
 

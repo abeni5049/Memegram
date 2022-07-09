@@ -10,9 +10,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
+import com.example.memegram.chat.Chat;
 import com.example.memegram.ui.notifications.Notification;
 import com.example.memegram.ui.notifications.NotificationsListAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +30,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private ArrayList<Comment> comments;
     private CommentListAdapter adapter;
+    private String imageURL1;
 
 
     @Override
@@ -37,6 +40,7 @@ public class CommentActivity extends AppCompatActivity {
         ImageView sendButton = findViewById(R.id.send);
         ProgressBar progressBar = findViewById(R.id.progress_bar);
         EditText commentEditText = findViewById(R.id.comment_edittext);
+        TextView emptyView = findViewById(R.id.empty_view);
 
         String postKey = getIntent().getExtras().getString("postKey");
         int item_pos = getIntent().getExtras().getInt("pos");
@@ -45,19 +49,42 @@ public class CommentActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference postsRef = database.getReference("posts");
 
-        int imageURL = this.getResources().getIdentifier("memegram_logo","drawable", this.getPackageName());
 
         postsRef.child(postKey).child("comment").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                progressBar.setVisibility(View.VISIBLE);
                 comments.clear();
+                progressBar.setVisibility(View.VISIBLE);
                 for(DataSnapshot ds : snapshot.getChildren()) {
-                    String username = ds.child("username").getValue(String.class);
+                    String username1 = ds.child("username").getValue(String.class);
                     String comment = ds.child("comment").getValue(String.class);
-                    comments.add(new Comment(imageURL,username,comment,"5h"));
-                    adapter.notifyDataSetChanged();
+
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference usersRef = database.getReference("users");
+                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for(DataSnapshot ds : snapshot.getChildren()) {
+                                String username = ds.child("username").getValue(String.class);
+                                String imageURL = ds.child("imageURL").getValue(String.class);
+                                if (username.equals(username1)){
+                                    imageURL1 = imageURL;
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+
+                    comments.add(new Comment(imageURL1,username1,comment,""));
                 }
+                if(comments.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }else{
+                    emptyView.setVisibility(View.GONE);
+                }
+                adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.INVISIBLE);
             }
 

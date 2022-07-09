@@ -1,9 +1,8 @@
 package com.example.memegram.chat;
 
 public class Chat {
-    int imageURL;
-    String latestMessage,senderUsername;
-    public Chat(int imageURL,String latestMessage,String senderUsername){
+    String latestMessage,senderUsername,imageURL;
+    public Chat(String imageURL,String latestMessage,String senderUsername){
         this.imageURL = imageURL;
         this.latestMessage = latestMessage;
         this.senderUsername = senderUsername;
@@ -13,7 +12,7 @@ public class Chat {
         return senderUsername;
     }
 
-    public int getImageURL() {
+    public String getImageURL() {
         return imageURL;
     }
 

@@ -14,9 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.memegram.LoginActivity;
 import com.example.memegram.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,12 +32,39 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     private List<DiscoverItem>  userListFull;
     private Context context;
     private MyClickListener listener;
+    public HashSet<String> following;
 
-    DiscoverAdapter(Context context,List<DiscoverItem> userList,List<DiscoverItem> userListFull,MyClickListener listener){
+
+    public DiscoverAdapter(Context context, List<DiscoverItem> userList, List<DiscoverItem> userListFull, MyClickListener listener){
         this.userList = userList;
         this.userListFull = userListFull;
         this.context = context;
         this.listener = listener;
+        following = new HashSet<>();
+
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersRef = database.getReference("users");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String username = ds.child("username").getValue(String.class);
+                    boolean isFollower = ds.child("followers").hasChild(LoginActivity.username1);
+                    if( isFollower ){
+                        isFollower = ds.child("followers").child(LoginActivity.username1).getValue(Boolean.class);
+                    }
+                    if (!username.equals(LoginActivity.username1) && isFollower){
+                        following.add(username);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     @NonNull
     @Override
@@ -42,9 +76,14 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     @Override
     public void onBindViewHolder(@NonNull DiscoverViewHolder holder, int position) {
         DiscoverItem currentItem = userList.get(position);
-        Glide.with(context).load(currentItem.getImageURL()).into(holder.profileImage);
+        Glide.with(context).load(currentItem.getImageURL()).placeholder(R.drawable.profile).into(holder.profileImage);
         holder.usernameText.setText(currentItem.getUsername());
         holder.locationText.setText(currentItem.getLocation());
+        if(following.contains(currentItem.getUsername())) {
+            holder.followButton.setText("unfollow");
+        }else{
+            holder.followButton.setText("follow");
+        }
     }
 
     @Override
